@@ -18,6 +18,10 @@ It uses Infrastructure as Code (IaC) using [SST](https://sst.dev). It deploys to
 
 ![Architecture Diagram](https://chipgpt.biz/architecture-diagram.png)
 
+## AWS Cost:
+
+The production cloud deployment without much activity is $1-$2 per day to run on AWS. Any product getting real use and customers will have to scale up the MCP cluster, but that's usually a good problem to have.
+
 ## Requirements:
 
 - AWS account with SSO set up in `~/.aws/config` [Setup Guide](https://sst.dev/docs/aws-accounts)
