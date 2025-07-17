@@ -7,7 +7,8 @@ import { getSequelizeConnection } from '../models';
 import { IUser, User } from '../models/user';
 
 // Initialize the DB connection
-getSequelizeConnection(false);
+const sequelize = getSequelizeConnection(false);
+sequelize.sync({ alter: { drop: false } });
 
 export interface ISession {
   userId: string;

@@ -140,6 +140,7 @@ To get the GitHub action deployment working you will need an IAM user with acces
 - Add a propper logging utility that works better with AWS CloudWatch.
 - Auto-Generate REST API Documentation.
 - Update to use the new Cognito UI mode.
+- Add proper Sequelize migrations.
 
 ## Feedback & Questions:
 
