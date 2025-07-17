@@ -1,0 +1,86 @@
+name: Production Deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/prod-workflow.yml"
+      - "public/**"
+      - "src/**"
+      - "mcp-server.ts"
+      - "next.config.mjs"
+      - "package-lock.json"
+      - "package.json"
+      - "postcss.config.mjs"
+      - "sst.config.ts"
+      - "tailwind.config.ts"
+      - "tsconfig.json"
+      - "tsconfig.mcp-server.json"
+
+# Add concurrency control
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup build tools
+        run: sudo apt-get update
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy SST
+        env:
+          NODE_ENV: production
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          WEB_URL: https://chipgpt.biz
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_SSL: true
+          AWS_HOSTED_ZONE_ID: ${{ secrets.AWS_HOSTED_ZONE_ID }}
+          CUSTOM_DOMAIN: chipgpt.biz
+          CUSTOM_MCP_DOMAIN: mcp.chipgpt.biz
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_POSTHOG_HOST: https://us.i.posthog.com
+        run: |
+          npm run deploy:production
+
+  post-deployment:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Team
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const message = `🚀 Production deployment completed!\n\n` +
+                          `🌐 Web App: https://chipgpt.biz`;
+
+              // You can add additional notification logic here
+              console.log(message);
+            } catch (error) {
+              console.log('Error details:', error);
+              throw error;
+            }

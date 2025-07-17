@@ -1,0 +1,15 @@
+# robots.txt for chipgpt
+
+User-agent: *
+Allow: /
+
+# Block sensitive areas
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /webhook/
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://chipgpt.biz/sitemap.xml

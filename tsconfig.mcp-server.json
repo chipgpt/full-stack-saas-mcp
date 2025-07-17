@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "strict": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "declaration": false,
+    "pretty": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "strictPropertyInitialization": true,
+    "esModuleInterop": true,
+    "outDir": "./dist-mcp-server"
+  },
+  "include": ["./mcp-server.ts", "./sst-env.d.ts"],
+  "exclude": ["node_modules"]
+}

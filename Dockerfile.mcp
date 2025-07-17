@@ -1,0 +1,30 @@
+FROM node:22-bullseye-slim
+
+# Setup the base image
+RUN apt-get update -y
+
+WORKDIR /app/
+
+# Copy files
+COPY package.json /app
+COPY package-lock.json /app
+
+# Install dependencies
+RUN npm ci
+
+# Copy directories
+COPY src /app/src
+COPY tsconfig.mcp-server.json /app/tsconfig.mcp-server.json
+COPY mcp-server.ts /app/mcp-server.ts
+
+# Build
+RUN npm run build:mcp
+
+# Clean up
+RUN apt-get clean \
+    && rm -r /app/src \
+    && npm prune --production
+
+WORKDIR /app/
+
+ENTRYPOINT ["node", "dist-mcp-server/mcp-server.js"]
