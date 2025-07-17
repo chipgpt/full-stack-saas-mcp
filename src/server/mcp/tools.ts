@@ -4,6 +4,7 @@ import { ISession } from './index';
 import { User } from '../models/user';
 import { MissingReadScopeError, MissingWriteScopeError, SafeError } from './errors';
 import { z } from 'zod';
+import { userProfileOutputSchema } from './schemas';
 
 export function registerResources(server: McpServer, userSession?: ISession) {
   if (userSession?.scope.includes('read')) {
@@ -12,7 +13,7 @@ export function registerResources(server: McpServer, userSession?: ISession) {
       'chipgpt://user-profile',
       {
         title: 'User Profile',
-        description: `This provides the User Profile`,
+        description: `This provides the User Profile as a resource`,
         mimeType: 'application/json',
       },
       async uri =>
@@ -22,7 +23,12 @@ export function registerResources(server: McpServer, userSession?: ISession) {
           }
 
           const content = {
-            profile: userSession.user.profile,
+            profile: {
+              id: userSession.user.id,
+              name: userSession.user.name,
+              email: userSession.user.email,
+              context: userSession.user.profile.context,
+            },
           };
 
           return {
@@ -40,6 +46,43 @@ export function registerResources(server: McpServer, userSession?: ISession) {
 }
 
 export function registerTools(server: McpServer, userSession?: ISession) {
+  if (userSession?.scope.includes('read')) {
+    server.registerTool(
+      'get-user-profile',
+      {
+        title: 'Get User Profile',
+        description: `This tool gets the user profile.`,
+        inputSchema: {},
+        outputSchema: userProfileOutputSchema,
+      },
+      async input =>
+        handleToolRequest(async () => {
+          if (!userSession.scope.includes('read')) {
+            throw new MissingWriteScopeError();
+          }
+
+          const content = {
+            profile: {
+              id: userSession.user.id,
+              name: userSession.user.name,
+              email: userSession.user.email,
+              context: userSession.user.profile.context,
+            },
+          };
+
+          return {
+            structuredContent: content,
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(content),
+              },
+            ],
+          };
+        })
+    );
+  }
+
   if (userSession?.scope.includes('write')) {
     server.registerTool(
       'update-user-profile',

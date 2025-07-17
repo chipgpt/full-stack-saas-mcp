@@ -1,4 +1,4 @@
-# Example Full Stack SaaS Web App w/ MCP
+# Example TypeScript Full Stack SaaS Web App w/ MCP
 
 I have been a software developer working on SaaS platforms for over 15 years. This example project compresses my years of knowledge into a fully functional Software as a Service (SaaS) platform that can be deployed to AWS using IaC and GitHub Actions. It's certainly not perfect, but I hope that this will help some up and coming SaaS entrepreneurs see a scalable, production-level build from end to end.
 
@@ -138,13 +138,15 @@ To get the GitHub action deployment working you will need an IAM user with acces
 
 ## Things I intend to add as I add them to my own SaaS:
 
+- Add SES email management for production SES access
 - Add a paid account tier (most likely using Stripe as the payment gateway)
-- Support for Amazon RDS + Proxy (had trouble getting it working with Sequelize, didn't feel like finding a new ORM)
-- Add Alarms/Alerts for cloud deployments to be proactive about issues.
 - Add a propper logging utility that works better with AWS CloudWatch.
+- Add Alarms/Alerts for cloud deployments to be proactive about issues.
 - Auto-Generate REST API Documentation.
-- Update to use the new Cognito UI mode.
+- Support for Amazon RDS + Proxy (had trouble getting it working with Sequelize, didn't feel like finding a new ORM)
 - Add proper Sequelize migrations.
+- Update to use the new Cognito UI mode.
+- Switch to the official `@auth/sequelize-adapter` package after [PR #13120](https://github.com/nextauthjs/next-auth/pull/13120) is merged.
 
 ## Feedback & Questions:
 

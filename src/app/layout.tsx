@@ -7,7 +7,7 @@ import Script from 'next/script';
 const montserrat = Montserrat({ subsets: ['latin'] });
 
 const NAME = 'ChipGPT';
-const TITLE = 'ChipGPT | Example Full Stack SaaS + MCP';
+const TITLE = 'ChipGPT | Example TypeScript Full Stack SaaS Web App w/ MCP';
 const TITLE_TEMPLATE = '%s | ChipGPT';
 const DESCRIPTION =
   'I have been a software developer working on SaaS platforms for over 15 years. This example project compresses my years of knowledge into a fully functional Software as a Service platform that can be deployed to AWS using IaC and GitHub CI/CD. I hope that this will help some up and coming SaaS entrepreneurs build a production ready platform from end to end.';
@@ -74,8 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 '@context': 'https://schema.org',
                 '@type': 'Product',
                 name: 'ChipGPT',
-                alternateName:
-                  'ChipGPT | Example Full Stack SaaS + MCP',
+                alternateName: 'ChipGPT | Example TypeScript Full Stack SaaS Web App w/ MCP',
                 description:
                   'I have been a software developer working on SaaS platforms for over 15 years. This example project compresses my years of knowledge into a fully functional Software as a Service platform that can be deployed to AWS using IaC and GitHub CI/CD. I hope that this will help some up and coming SaaS entrepreneurs build a production ready platform from end to end.',
                 image: 'https://chipgpt.biz/chipgpt-logo.png',
@@ -104,8 +103,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 '@context': 'https://schema.org',
                 '@type': 'Organization',
                 name: 'ChipGPT',
-                alternateName:
-                  'ChipGPT | Example Full Stack SaaS + MCP',
+                alternateName: 'ChipGPT | Example TypeScript Full Stack SaaS Web App w/ MCP',
                 url: 'https://chipgpt.biz',
                 logo: 'https://chipgpt.biz/chipgpt-logo.png',
                 sameAs: [],

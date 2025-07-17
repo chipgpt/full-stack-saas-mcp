@@ -73,7 +73,6 @@ export function InitAccountModel(sequelize: Sequelize) {
     },
     {
       underscored: true,
-      timestamps: false,
       sequelize: sequelize,
       tableName: 'accounts',
       paranoid: true,

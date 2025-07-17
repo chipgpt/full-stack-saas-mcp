@@ -42,7 +42,6 @@ export function InitUserModel(sequelize: Sequelize) {
     },
     {
       underscored: true,
-      timestamps: false,
       sequelize: sequelize,
       tableName: 'users',
       paranoid: true,

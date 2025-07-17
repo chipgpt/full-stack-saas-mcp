@@ -20,7 +20,7 @@ export default function Home() {
       <div className="flex flex-col gap-10 items-center">
         <div className="flex flex-col items-center gap-2">
           <h1 className="font-bold text-xl">ChipGPT</h1>
-          <h2>Example Full Stack SaaS Web App w/ MCP</h2>
+          <h2>Example TypeScript Full Stack SaaS Web App w/ MCP</h2>
           <Link
             href="https://github.com/chipgpt/full-stack-saas-mcp"
             target="_blank"

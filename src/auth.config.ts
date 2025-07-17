@@ -6,7 +6,9 @@ import { CONFIG } from './server/config';
 import pg from 'pg';
 import { InitUserModel } from './server/models/user';
 import { InitAccountModel } from './server/models/account';
-import SequelizeAdapter from '@auth/sequelize-adapter';
+import SequelizeAdapter from './lib/@auth/sequelize-adapter';
+import { InitSessionModel } from './server/models/session';
+import { InitVerificationTokenModel } from './server/models/verification-token';
 
 export const nextAuthConfig: NextAuthConfig = {
   callbacks: {
@@ -68,8 +70,14 @@ export const getNextAuthConfig = async (): Promise<NextAuthConfig> => {
         User: InitUserModel(sequelize),
         // @ts-expect-error
         Account: InitAccountModel(sequelize),
+        Session: InitSessionModel(sequelize),
+        VerificationToken: InitVerificationTokenModel(sequelize),
       },
       synchronize: true,
+      associations: (User, Account, Session) => {
+        Account.belongsTo(User, { onDelete: 'cascade', foreignKey: 'userId', as: 'user' });
+        Session.belongsTo(User, { onDelete: 'cascade', foreignKey: 'userId', as: 'user' });
+      },
     }),
     debug: true,
   };

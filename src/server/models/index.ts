@@ -7,6 +7,8 @@ import { InitUserModel } from './user';
 import { InitOAuthClientModel } from './oauth-client';
 import { InitOAuthAccessTokenModel } from './oauth-access-token';
 import { InitOAuthAuthorizationCodeModel } from './oauth-authorization-code';
+import { InitSessionModel } from './session';
+import { InitVerificationTokenModel } from './verification-token';
 
 export const getSequelizeConnection = once((lambda: boolean) => {
   const connectionOptions: Options = {
@@ -71,6 +73,7 @@ export const getSequelizeConnection = once((lambda: boolean) => {
   const OAuthClient = InitOAuthClientModel(sequelize);
   const OAuthAccessToken = InitOAuthAccessTokenModel(sequelize);
   const OAuthAuthorizationCode = InitOAuthAuthorizationCodeModel(sequelize);
+  const Session = InitSessionModel(sequelize);
 
   User.hasMany(Account, { foreignKey: 'userId', as: 'accounts' });
   Account.belongsTo(User, { foreignKey: 'userId', as: 'user' });
@@ -89,6 +92,11 @@ export const getSequelizeConnection = once((lambda: boolean) => {
 
   OAuthClient.hasMany(OAuthAuthorizationCode, { foreignKey: 'clientId', as: 'authorizationCodes' });
   OAuthAuthorizationCode.belongsTo(OAuthClient, { foreignKey: 'clientId', as: 'client' });
+
+  User.hasMany(Session, { foreignKey: 'userId', as: 'sessions' });
+  Session.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+  InitVerificationTokenModel(sequelize);
 
   return sequelize;
 });
