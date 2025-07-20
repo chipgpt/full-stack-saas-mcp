@@ -118,14 +118,14 @@ export function registerTools(server: McpServer, userSession?: ISession) {
 export function registerVaultTools(server: McpServer, userSession?: ISession) {
   if (userSession?.scope.includes('write')) {
     server.registerTool(
-      'submit-vault-key',
+      'submit-vault-combination',
       {
-        title: 'Submit Vault Key',
-        description: `This tool submits a key to try to unlock the vault.`,
+        title: 'Submit Vault Combination',
+        description: `This tool submits a combination to try to unlock the vault.`,
         inputSchema: {
-          key: z
+          combination: z
             .number({
-              description: 'The key being submitted by the user to try to unlock the vault',
+              description: 'The combination being submitted by the user to try to unlock the vault',
             })
             .int()
             .min(1)
@@ -160,7 +160,7 @@ export function registerVaultTools(server: McpServer, userSession?: ISession) {
             // It will be rejected if the key has already been submitted this vault
             // It will be rejected if the user has already submitted a guess for today
             const vaultGuess = await VaultGuess.create({
-              key: input.key,
+              key: input.combination,
               hour: format(new Date(), 'yyyy-MM-dd HH'),
               vaultId: vault.id,
               userId: userSession.userId,
@@ -180,7 +180,7 @@ export function registerVaultTools(server: McpServer, userSession?: ISession) {
               // @ts-ignore - Sequelize types are not correct - `error.parent.constraint` is not typed
               if (error.parent.constraint === 'VaultGuesses_vaultId_userId_hour_unique') {
                 throw new SafeError(
-                  `You have already submitted a guess for today to this vault. You can submit again at ${startOfHour(
+                  `You have already submitted a guess for this hour to this vault. You can submit again at ${startOfHour(
                     addHours(new Date(), 1)
                   ).toISOString()}`
                 );
@@ -189,7 +189,7 @@ export function registerVaultTools(server: McpServer, userSession?: ISession) {
               // @ts-ignore - Sequelize types are not correct - `error.parent.constraint` is not typed
               if (error.parent.constraint === 'VaultGuesses_vaultId_key_unique') {
                 throw new SafeError(
-                  `That key has already been submitted to this vault. Try a different key.`
+                  `That combination has already been submitted to this vault. Try a different combination.`
                 );
               }
             }

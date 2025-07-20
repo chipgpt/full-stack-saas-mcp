@@ -267,7 +267,9 @@ export default function VaultPage() {
               with something like:
             </p>
             <div className="bg-gray-100 p-3 rounded-md">
-              <p className="text-sm font-mono text-gray-800">"try to open the vault using 37746"</p>
+              <p className="text-sm font-mono text-gray-800">
+                "try to open the vault using combination 37746"
+              </p>
             </div>
             <p className="text-gray-600 text-sm">Choose your guess wisely!</p>
           </div>
