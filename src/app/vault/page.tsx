@@ -244,12 +244,12 @@ export default function VaultPage() {
         <div className="space-y-4">
           <div className="space-y-3">
             <h3 className="font-semibold text-gray-900">Step 1: Connect to the Vault MCP Server</h3>
-            <p className="text-gray-600 text-sm">
-              Connect to the Vault MCP server at{' '}
-              <div className="bg-gray-100 p-3 rounded-md">
-                <p className="text-sm font-mono text-gray-800">https://mcp.chipgpt.biz/mcp/vault</p>
-              </div>
-            </p>
+            <p className="text-gray-600 text-sm">Connect to the Vault MCP server at</p>
+            <div className="text-gray-600 text-sm bg-gray-100 p-3 rounded-md">
+              <span className="text-sm font-mono text-gray-800">
+                https://mcp.chipgpt.biz/mcp/vault
+              </span>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -267,9 +267,9 @@ export default function VaultPage() {
               with something like:
             </p>
             <div className="bg-gray-100 p-3 rounded-md">
-              <p className="text-sm font-mono text-gray-800">
+              <span className="text-sm font-mono text-gray-800">
                 "try to open the vault using combination 37746"
-              </p>
+              </span>
             </div>
             <p className="text-gray-600 text-sm">Choose your guess wisely!</p>
           </div>
