@@ -41,6 +41,7 @@
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
     "next-auth": "^5.0.0-beta.29",

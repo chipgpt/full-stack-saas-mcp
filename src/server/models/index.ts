@@ -9,6 +9,8 @@ import { InitOAuthAccessTokenModel } from './oauth-access-token';
 import { InitOAuthAuthorizationCodeModel } from './oauth-authorization-code';
 import { InitSessionModel } from './session';
 import { InitVerificationTokenModel } from './verification-token';
+import { InitVaultModel } from './vault';
+import { InitVaultGuessModel } from './vault-guess';
 
 export const getSequelizeConnection = once((lambda: boolean) => {
   const connectionOptions: Options = {
@@ -74,6 +76,8 @@ export const getSequelizeConnection = once((lambda: boolean) => {
   const OAuthAccessToken = InitOAuthAccessTokenModel(sequelize);
   const OAuthAuthorizationCode = InitOAuthAuthorizationCodeModel(sequelize);
   const Session = InitSessionModel(sequelize);
+  const Vault = InitVaultModel(sequelize);
+  const VaultGuess = InitVaultGuessModel(sequelize);
 
   User.hasMany(Account, { foreignKey: 'userId', as: 'accounts' });
   Account.belongsTo(User, { foreignKey: 'userId', as: 'user' });
@@ -95,6 +99,9 @@ export const getSequelizeConnection = once((lambda: boolean) => {
 
   User.hasMany(Session, { foreignKey: 'userId', as: 'sessions' });
   Session.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+  Vault.hasMany(VaultGuess, { foreignKey: 'vaultId', as: 'valueGuesses' });
+  VaultGuess.belongsTo(Vault, { foreignKey: 'vaultId', as: 'vault' });
 
   InitVerificationTokenModel(sequelize);
 
