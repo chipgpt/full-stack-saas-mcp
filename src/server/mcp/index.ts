@@ -33,19 +33,6 @@ declare global {
 
 const app = express();
 
-// Rate limit requests to 10 requests per minute per IP
-app.use(
-  rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minutes
-    max: 10, // Limit each IP to 10 requests per `windowMs`
-    message: 'Too many requests, please try again later.',
-    standardHeaders: true,
-  })
-);
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 // Add CORS middleware before your MCP routes
 app.use(
   cors({
@@ -65,6 +52,19 @@ app.use('/.well-known/oauth-protected-resource', oauthMetadata);
 app.get(['/', '/health'], (req, res) => {
   res.send('MCP Server is running');
 });
+
+// Rate limit requests to 10 requests per minute per IP
+app.use(
+  rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minutes
+    max: 10, // Limit each IP to 10 requests per `windowMs`
+    message: 'Too many requests, please try again later.',
+    standardHeaders: true,
+  })
+);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // OAuth 2.1 token validation
 app.use(async (req, res, next) => {
