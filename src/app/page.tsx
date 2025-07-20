@@ -98,13 +98,17 @@ export default function Home() {
             https://mcp.chipgpt.biz/mcp
           </Link>
         </div>
-        <div>
+        <div className="flex flex-col sm:flex-row gap-2 items-center">
           <Link href="https://tiktok.com/@chip.gpt" target="_blank" className="underline">
             TikTok
-          </Link>{' '}
-          |{' '}
+          </Link>
+          <span>|</span>
           <Link href="mailto:hi@chipgpt.biz" className="underline">
             Biz Inquiries
+          </Link>
+          <span>|</span>
+          <Link href="/vault" className="underline">
+            The Vault
           </Link>
         </div>
       </div>

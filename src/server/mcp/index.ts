@@ -5,6 +5,7 @@ import { oauthAuthorizationServer, oauthMetadata } from './oauth';
 import { OAuthAccessToken } from '../models/oauth-access-token';
 import { getSequelizeConnection } from '../models';
 import { IUser, User } from '../models/user';
+import { rateLimit } from 'express-rate-limit';
 
 // Initialize the DB connection
 const sequelize = getSequelizeConnection(false);
@@ -31,6 +32,17 @@ declare global {
 }
 
 const app = express();
+
+// Rate limit requests to 10 requests per minute per IP
+app.use(
+  rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minutes
+    max: 10, // Limit each IP to 10 requests per `windowMs`
+    message: 'Too many requests, please try again later.',
+    standardHeaders: true,
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -97,11 +109,14 @@ app.use(async (req, res, next) => {
 // Handle POST requests for client-to-server communication
 app.post('/mcp', (req, res) => transportHandler(req.authInfo)(req, res));
 
+// Handle POST requests for client-to-server communication for the vault
+app.post('/mcp/vault', (req, res) => transportHandler(req.authInfo, 'vault')(req, res));
+
 // Handle GET requests for server-to-client notifications via SSE
-app.get('/mcp', sessionHandler);
+app.get(['/mcp', '/mcp/vault'], sessionHandler);
 
 // Handle DELETE requests for session termination
-app.delete('/mcp', sessionHandler);
+app.delete(['/mcp', '/mcp/vault'], sessionHandler);
 
 app.listen(3333, () => {
   console.log('MCP server is running on port 3333');
