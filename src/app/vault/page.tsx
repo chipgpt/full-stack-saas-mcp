@@ -18,7 +18,7 @@ export default function VaultPage() {
   }
 
   // Create a set of guessed values for efficient lookup
-  const guessedValues = new Set(vault?.guesses || []);
+  const guessedValues = useMemo(() => new Set(vault?.guesses || []), [vault?.guesses]);
 
   const renderGuessItem = useCallback(
     (guess: number) => {
@@ -268,7 +268,7 @@ export default function VaultPage() {
             </p>
             <div className="bg-gray-100 p-3 rounded-md">
               <span className="text-sm font-mono text-gray-800">
-                "try to open the vault using combination 37746"
+                try to open the vault using combination 37746
               </span>
             </div>
             <p className="text-gray-600 text-sm">Choose your guess wisely!</p>
