@@ -30,6 +30,7 @@ The production cloud deployment without much activity is $1-$2 per day to run on
 - You must also bring your own production postgres database or you need to add RDS to the SST stack. I use [Digital Ocean managed databases](https://www.digitalocean.com/products/managed-databases-postgresql).
 - Your domain should be set up in Route 53 and you will need the Hosted Zone ID for cloud deployments (not needed for local deployments).
 - IAM user access key/secret [Setup Guide](https://guide.sst.dev/chapters/create-an-iam-user.html) and [Permissions Guide](https://sst.dev/docs/iam-credentials/#iam-permissions)
+- Mailgun Account [Get API Key](https://help.mailgun.com/hc/en-us/articles/203380100-Where-can-I-find-my-API-keys-and-SMTP-credentials)
 
 You can do a global find for `chipgpt` (case insensitive) and locate most things that need to be updated with your own project name and description.
 
@@ -41,12 +42,12 @@ Log in to AWS SSO:
 npm run sso
 ```
 
-Copy the `.env` file and populate them. You don't need a development cloud deployment but it supports it if you want a staging server eventually:
+Copy the `.env.example` file and populate them. You don't need a development cloud deployment but it supports it if you want a staging server eventually:
 
 ```bash
-cp .env .env.local
-cp .env .env.development.local
-cp .env .env.production.local
+cp .env .env.{{username}}
+cp .env .env.development
+cp .env .env.production
 ```
 
 Install dependencies:
@@ -134,19 +135,20 @@ To get the GitHub action deployment working you will need an IAM user with acces
 - AUTH_SECRET
 - DATABASE_URL
 - AWS_HOSTED_ZONE_ID
+- MAILGUN_API_KEY
 - NEXT_PUBLIC_POSTHOG_KEY (not really a "secret", it could be a variable instead)
 
 ## Things I intend to add as I add them to my own SaaS:
 
-- Add SES email management for production SES access
-- Add a paid account tier (most likely using Stripe as the payment gateway)
-- Add a propper logging utility that works better with AWS CloudWatch.
-- Add Alarms/Alerts for cloud deployments to be proactive about issues.
-- Auto-Generate REST API Documentation.
-- Support for Amazon RDS + Proxy (had trouble getting it working with Sequelize, didn't feel like finding a new ORM)
-- Add proper Sequelize migrations.
-- Update to use the new Cognito UI mode.
-- Switch to the official `@auth/sequelize-adapter` package after [PR #13120](https://github.com/nextauthjs/next-auth/pull/13120) is merged.
+- [x] ~~Add SES email management for production SES access~~ Add Mailgun email for sending emails
+- [ ] Add a paid account tier (most likely using Stripe as the payment gateway)
+- [ ] Add a propper logging utility that works better with AWS CloudWatch.
+- [ ] Add Alarms/Alerts for cloud deployments to be proactive about issues.
+- [ ] Auto-Generate REST API Documentation.
+- [ ] Support for Amazon RDS + Proxy (had trouble getting it working with Sequelize, didn't feel like finding a new ORM)
+- [ ] Add proper Sequelize migrations.
+- [ ] Update to use the new Cognito UI mode.
+- [ ] Switch to the official `@auth/sequelize-adapter` package after [PR #13120](https://github.com/nextauthjs/next-auth/pull/13120) is merged.
 
 ## Feedback & Questions:
 

@@ -9,6 +9,7 @@ import { InitAccountModel } from './server/models/account';
 import SequelizeAdapter from './lib/@auth/sequelize-adapter';
 import { InitSessionModel } from './server/models/session';
 import { InitVerificationTokenModel } from './server/models/verification-token';
+import { sendMailgunEmail } from './server/utils/mailgun';
 
 export const nextAuthConfig: NextAuthConfig = {
   callbacks: {
@@ -33,6 +34,23 @@ export const nextAuthConfig: NextAuthConfig = {
     //   console.log('\n\nJWT', args);
     //   return args;
     // },
+  },
+  events: {
+    // Send welcome email to new users
+    createUser: async ({ user }) => {
+      if (user.email) {
+        try {
+          await sendMailgunEmail(
+            user.email,
+            'Welcome to ChipGPT',
+            'Welcome to ChipGPT',
+            'Welcome to ChipGPT'
+          );
+        } catch (error) {
+          console.error('Error sending welcome email', error);
+        }
+      }
+    },
   },
   providers: [
     Cognito({

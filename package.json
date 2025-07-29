@@ -44,6 +44,7 @@
     "express-rate-limit": "^8.0.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
+    "mailgun.js": "^12.0.3",
     "next-auth": "^5.0.0-beta.29",
     "pg": "^8.13.1",
     "posthog-js": "^1.256.2",
