@@ -39,12 +39,16 @@ export const nextAuthConfig: NextAuthConfig = {
     // Send welcome email to new users
     createUser: async ({ user }) => {
       if (user.email) {
-        sendMailgunEmail(
-          user.email,
-          'Welcome to ChipGPT',
-          'Welcome to ChipGPT',
-          'Welcome to ChipGPT'
-        );
+        try {
+          await sendMailgunEmail(
+            user.email,
+            'Welcome to ChipGPT',
+            'Welcome to ChipGPT',
+            'Welcome to ChipGPT'
+          );
+        } catch (error) {
+          console.error('Error sending welcome email', error);
+        }
       }
     },
   },
