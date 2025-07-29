@@ -58,6 +58,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_SSL: true
           AWS_HOSTED_ZONE_ID: ${{ secrets.AWS_HOSTED_ZONE_ID }}
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          SENDER_DOMAIN: chipgpt.biz
           CUSTOM_DOMAIN: chipgpt.biz
           CUSTOM_MCP_DOMAIN: mcp.chipgpt.biz
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}

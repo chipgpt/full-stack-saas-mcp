@@ -26,25 +26,25 @@ export default $config({
                   input.stage === 'production' ? 'chipgpt-production' : 'chipgpt-development',
               }),
         },
+        mailgun: '3.5.10',
       },
     };
   },
   async run() {
     const isProductionStage = $app.stage === 'production';
-    const isDevelopmentStage = $app.stage === 'development';
-
-    // Grab the .env based on stage
-    if (isProductionStage) {
-      config({ path: './.env.production.local', override: true });
-    } else if (isDevelopmentStage) {
-      config({ path: './.env.development.local', override: true });
-    } else {
-      config({ path: './.env.local', override: true });
-    }
 
     // Validate required environment vars
     if (!process.env.AUTH_SECRET) {
       throw new Error('process.env.AUTH_SECRET is required');
+    }
+    if (!process.env.AWS_HOSTED_ZONE_ID) {
+      throw new Error('process.env.AWS_HOSTED_ZONE_ID is required');
+    }
+    if (!process.env.SENDER_DOMAIN) {
+      throw new Error('process.env.SENDER_DOMAIN is required');
+    }
+    if (!process.env.MAILGUN_API_KEY) {
+      throw new Error('process.env.MAILGUN_API_KEY is required');
     }
 
     // Environment variables we will expose to the functions and nextjs app
@@ -53,7 +53,53 @@ export default $config({
       DATABASE_URL: process.env.DATABASE_URL || '',
       DATABASE_SSL: process.env.DATABASE_SSL || '',
       WEB_URL: process.env.WEB_URL || 'http://localhost:3000',
+      SENDER_DOMAIN: process.env.SENDER_DOMAIN || '',
+      MAILGUN_API_KEY: process.env.MAILGUN_API_KEY || '',
     };
+
+    // Create Mailgun domain and verify DNS sending records
+    const mailgunEmail = new mailgun.Domain('MyMailgunDomain', {
+      name: environment.SENDER_DOMAIN,
+      webScheme: 'https',
+    });
+    const sendingRecord1 = mailgunEmail.sendingRecordsSets?.[0];
+    const sendingRecord2 = mailgunEmail.sendingRecordsSets?.[1];
+    const sendingRecord3 = mailgunEmail.sendingRecordsSets?.[2];
+    if (sendingRecord1) {
+      new aws.route53.Record('MyMailgunEmailSendingRecord1', {
+        zoneId: process.env.AWS_HOSTED_ZONE_ID,
+        name: sendingRecord1.name,
+        type: sendingRecord1.recordType,
+        ttl: 600,
+        records: [sendingRecord1.value],
+      });
+    }
+    if (sendingRecord2) {
+      new aws.route53.Record('MyMailgunEmailSendingRecord2', {
+        zoneId: process.env.AWS_HOSTED_ZONE_ID,
+        name: sendingRecord2.name,
+        type: sendingRecord2.recordType,
+        ttl: 600,
+        records: [sendingRecord2.value],
+      });
+    }
+    if (sendingRecord3) {
+      new aws.route53.Record('MyMailgunEmailSendingRecord3', {
+        zoneId: process.env.AWS_HOSTED_ZONE_ID,
+        name: sendingRecord3.name,
+        type: sendingRecord3.recordType,
+        ttl: 600,
+        records: [sendingRecord3.value],
+      });
+    }
+
+    // Create a linkable for the Mailgun API key to link to the app
+    const mailgunLinkable = new sst.Linkable('MyMailgun', {
+      properties: {
+        key: environment.MAILGUN_API_KEY,
+        domain: mailgunEmail.name,
+      },
+    });
 
     // Create our VPC and add EC2 internet gateway
     const vpc = new sst.aws.Vpc('MyVpc', { nat: 'ec2' });
@@ -102,7 +148,7 @@ export default $config({
         AUTH_TRUST_HOST: String(!!environment.WEB_URL),
         AUTH_URL: `${environment.WEB_URL}/api/auth`,
       },
-      link: [pool, client].filter(Boolean),
+      link: [mailgunLinkable, pool, client].filter(Boolean),
       domain: process.env.CUSTOM_DOMAIN
         ? {
             name: process.env.CUSTOM_DOMAIN,
@@ -179,7 +225,7 @@ export default $config({
       cpu: '0.5 vCPU',
       memory: '1 GB',
       environment: environment,
-      link: [dynamoMCPSessionCache].filter(Boolean),
+      link: [mailgunLinkable, dynamoMCPSessionCache].filter(Boolean),
       dev: {
         command: 'npm run dev:mcp',
       },

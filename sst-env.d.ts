@@ -9,6 +9,11 @@ declare module "sst" {
       "name": string
       "type": "sst.aws.Dynamo"
     }
+    "MyMailgun": {
+      "domain": string
+      "key": string
+      "type": "sst.sst.Linkable"
+    }
     "MyMcpService": {
       "service": string
       "type": "sst.aws.Service"
