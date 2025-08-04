@@ -31,6 +31,7 @@ The production cloud deployment without much activity is $1-$2 per day to run on
 - Your domain should be set up in Route 53 and you will need the Hosted Zone ID for cloud deployments (not needed for local deployments).
 - IAM user access key/secret [Setup Guide](https://guide.sst.dev/chapters/create-an-iam-user.html) and [Permissions Guide](https://sst.dev/docs/iam-credentials/#iam-permissions)
 - Mailgun Account [Get API Key](https://help.mailgun.com/hc/en-us/articles/203380100-Where-can-I-find-my-API-keys-and-SMTP-credentials)
+- Stripe Account [Get API Key] (https://docs.stripe.com/keys)
 
 You can do a global find for `chipgpt` (case insensitive) and locate most things that need to be updated with your own project name and description.
 
@@ -74,7 +75,7 @@ npx sst dev
 > ✕  Unexpected error occurred. Please run with --print-logs or check .sst/log/sst.log if available.
 > ```
 
-After starting up new environments for the first time, you will need to update the newly Amazon Cognito Pool's domain in AWS console.
+After starting up new environments for the first time, you will need to update the new Amazon Cognito Pool's domain in AWS console.
 
 **Log in to AWS Console** > **Amazon Cognito** > **User Pools** > **select user pool** > **Domain** > **set a domain for your cognito pool and make sure to set "Hosted UI (classic)"**
 
@@ -136,12 +137,13 @@ To get the GitHub action deployment working you will need an IAM user with acces
 - DATABASE_URL
 - AWS_HOSTED_ZONE_ID
 - MAILGUN_API_KEY
+- STRIPE_API_KEY
 - NEXT_PUBLIC_POSTHOG_KEY (not really a "secret", it could be a variable instead)
 
 ## Things I intend to add as I add them to my own SaaS:
 
 - [x] ~~Add SES email management for production SES access~~ Add Mailgun email for sending emails
-- [ ] Add a paid account tier (most likely using Stripe as the payment gateway)
+- [x] Add a paid account tier (most likely using Stripe as the payment gateway)
 - [ ] Add a propper logging utility that works better with AWS CloudWatch.
 - [ ] Add Alarms/Alerts for cloud deployments to be proactive about issues.
 - [ ] Auto-Generate REST API Documentation.

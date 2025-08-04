@@ -19,6 +19,17 @@ declare module "sst" {
       "type": "sst.aws.Service"
       "url": string
     }
+    "MyStripePlans": {
+      "apiKey": string
+      "coupons": {
+        "starter": string
+      }
+      "plans": {
+        "starter": string
+      }
+      "type": "sst.sst.Linkable"
+      "webhookSecret": string
+    }
     "MyUserPool": {
       "id": string
       "type": "sst.aws.CognitoUserPool"
