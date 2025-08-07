@@ -1,7 +1,7 @@
 import { handleRequest } from '@/lib/handle-request';
 import { User } from '@/server/models/user';
 import { NextResponse } from 'next/server';
-import { oauthServer } from '..';
+import { oauthServer } from '@/lib/oauth';
 import { OAuthError, Request, Response } from '@node-oauth/oauth2-server';
 
 export const GET = handleRequest(async req => {

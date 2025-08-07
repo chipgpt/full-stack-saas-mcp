@@ -1,5 +1,5 @@
 import { handleRequest } from '@/lib/handle-request';
-import { oauthServer } from '..';
+import { oauthServer } from '@/lib/oauth';
 import { NextResponse } from 'next/server';
 import { Request, Response } from '@node-oauth/oauth2-server';
 import { OAuthClient } from '@/server/models/oauth-client';
