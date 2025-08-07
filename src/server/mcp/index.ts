@@ -78,41 +78,41 @@ app.use(async (req, res, next) => {
       next();
       return;
     }
+  }
 
-    // Authenticate the access token
-    // inspiration: https://github.com/node-oauth/express-oauth-server/blob/master/index.js
-    const request = new Request(req);
-    const response = new Response(res);
-    let oauthAccessToken;
-    try {
-      oauthAccessToken = await oauthServer.authenticate(request, response);
-    } catch (e) {
-      if (e instanceof OAuthError) {
-        res.set(response.headers);
-        res.status(e.code);
+  // Authenticate the access token
+  // inspiration: https://github.com/node-oauth/express-oauth-server/blob/master/index.js
+  const request = new Request(req);
+  const response = new Response(res);
+  let oauthAccessToken;
+  try {
+    oauthAccessToken = await oauthServer.authenticate(request, response);
+  } catch (e) {
+    if (e instanceof OAuthError) {
+      res.set(response.headers);
+      res.status(e.code);
 
-        if (e instanceof UnauthorizedRequestError) {
-          res.send();
-          return;
-        }
-
-        res.send({ error: e.name, error_description: e.message });
+      if (e instanceof UnauthorizedRequestError) {
+        res.send();
         return;
       }
-      throw e;
+
+      res.send({ error: e.name, error_description: e.message });
+      return;
     }
-
-    const newSession: ISession = {
-      userId: oauthAccessToken.user.id,
-      sessionType: 'oauth',
-      scope: oauthAccessToken.scope || [],
-      expiresAt: oauthAccessToken.accessTokenExpiresAt,
-      user: oauthAccessToken.user.get({ plain: true }),
-    };
-    sessionCache.set(token, newSession);
-
-    req.authInfo = newSession;
+    throw e;
   }
+
+  const newSession: ISession = {
+    userId: oauthAccessToken.user.id,
+    sessionType: 'oauth',
+    scope: oauthAccessToken.scope || [],
+    expiresAt: oauthAccessToken.accessTokenExpiresAt,
+    user: oauthAccessToken.user.get({ plain: true }),
+  };
+  sessionCache.set(token, newSession);
+
+  req.authInfo = newSession;
 
   next();
 });
