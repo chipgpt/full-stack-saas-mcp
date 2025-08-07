@@ -32,7 +32,7 @@ function OAuthAuthorize() {
     // Build new search params with selected scopes
     const params = new URLSearchParams(location.search);
     params.set('scope', selectedScopes.join(' '));
-    location.href = `/api/oauth/authorize?${params.toString()}&state=12345`;
+    location.href = `/api/oauth/authorize?${params.toString()}`;
   };
 
   const { oauthClient } = useOAuthClient({ id: searchParams.get('client_id') || '' });

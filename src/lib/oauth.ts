@@ -10,6 +10,7 @@ import { OAuthClient } from '@/server/models/oauth-client';
 import { User } from '@/server/models/user';
 
 export const oauthServer = new OAuth2Server({
+  allowEmptyState: true,
   model: {
     async getClient(clientId: string, clientSecret?: string) {
       const client = await OAuthClient.findOne({
@@ -61,8 +62,8 @@ export const oauthServer = new OAuth2Server({
         expiresAt: code.expiresAt,
         redirectUri: code.redirectUri,
         scope: code.scope,
-        client: { id: code.client.id, grants: code.client.grants },
-        user: { id: code.user.id },
+        client: code.client,
+        user: code.user,
         codeChallenge: code.codeChallenge || undefined,
         codeChallengeMethod: code.codeChallengeMethod || undefined,
       };
@@ -94,8 +95,8 @@ export const oauthServer = new OAuth2Server({
         refreshToken: token.refreshToken,
         refreshTokenExpiresAt: token.refreshTokenExpiresAt,
         scope: token.scope,
-        client: { id: client.id, grants: client.grants },
-        user: { id: user.id },
+        client: client,
+        user: user,
 
         // other formats, i.e. for Zapier
         access_token: token.accessToken,
@@ -121,8 +122,8 @@ export const oauthServer = new OAuth2Server({
         accessToken: token.accessToken,
         accessTokenExpiresAt: token.accessTokenExpiresAt,
         scope: token.scope,
-        client: { id: token.client.id, grants: token.client.grants },
-        user: { id: token.user.id },
+        client: token.client,
+        user: token.user,
       };
     },
     async getRefreshToken(refreshToken: string) {
@@ -144,8 +145,8 @@ export const oauthServer = new OAuth2Server({
         refreshToken: token.refreshToken,
         refreshTokenExpiresAt: token.refreshTokenExpiresAt,
         scope: token.scope,
-        client: { id: token.client.id, grants: token.client.grants },
-        user: { id: token.user.id },
+        client: token.client,
+        user: token.user,
       };
     },
   }, // See https://github.com/oauthjs/node-oauth2-server for specification

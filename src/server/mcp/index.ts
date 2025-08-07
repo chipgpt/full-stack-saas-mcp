@@ -2,10 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import { sessionHandler, transportHandler } from './transport-handler';
 import { oauthAuthorizationServer, oauthMetadata } from './oauth';
-import { OAuthAccessToken } from '../models/oauth-access-token';
 import { getSequelizeConnection } from '../models';
-import { IUser, User } from '../models/user';
+import { IUser } from '../models/user';
 import { rateLimit } from 'express-rate-limit';
+import { OAuthError, Request, Response, UnauthorizedRequestError } from '@node-oauth/oauth2-server';
+import { oauthServer } from '../../lib/oauth';
 
 // Initialize the DB connection
 const sequelize = getSequelizeConnection(false);
@@ -15,7 +16,7 @@ export interface ISession {
   userId: string;
   sessionType: string;
   scope: string[];
-  expiresAt: Date;
+  expiresAt?: Date;
   user: IUser;
   // Other things you want in the session
 }
@@ -68,11 +69,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // OAuth 2.1 token validation
 app.use(async (req, res, next) => {
-  const [type, token] = (req.headers.authorization || '').split(' ') || [];
-  if (!token || type !== 'Bearer') {
-    res.status(401).json({ error: 'Missing or invalid authorization header' });
-    return;
-  }
+  const [, token] = (req.headers.authorization || '').split(' ') || [];
 
   if (token) {
     const cachedToken = sessionCache.get(token);
@@ -82,19 +79,33 @@ app.use(async (req, res, next) => {
       return;
     }
 
-    const oauthAccessToken = await OAuthAccessToken.findOne({
-      where: { accessToken: token },
-      include: [{ model: User, as: 'user' }],
-    });
-    if (!oauthAccessToken?.user) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
+    // Authenticate the access token
+    // inspiration: https://github.com/node-oauth/express-oauth-server/blob/master/index.js
+    const request = new Request(req);
+    const response = new Response(res);
+    let oauthAccessToken;
+    try {
+      oauthAccessToken = await oauthServer.authenticate(request, response);
+    } catch (e) {
+      if (e instanceof OAuthError) {
+        res.set(response.headers);
+        res.status(e.code);
+
+        if (e instanceof UnauthorizedRequestError) {
+          res.send();
+          return;
+        }
+
+        res.send({ error: e.name, error_description: e.message });
+        return;
+      }
+      throw e;
     }
 
     const newSession: ISession = {
-      userId: oauthAccessToken.userId,
+      userId: oauthAccessToken.user.id,
       sessionType: 'oauth',
-      scope: oauthAccessToken.scope,
+      scope: oauthAccessToken.scope || [],
       expiresAt: oauthAccessToken.accessTokenExpiresAt,
       user: oauthAccessToken.user.get({ plain: true }),
     };
