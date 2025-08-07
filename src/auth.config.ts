@@ -1,15 +1,24 @@
-import { NextAuthConfig } from 'next-auth';
+import { DefaultSession, NextAuthConfig } from 'next-auth';
 import Cognito from 'next-auth/providers/cognito';
 import { Resource } from 'sst';
 import { Sequelize } from 'sequelize';
 import { CONFIG } from './server/config';
 import pg from 'pg';
-import { InitUserModel } from './server/models/user';
+import { InitUserModel, IUser } from './server/models/user';
 import { InitAccountModel } from './server/models/account';
 import SequelizeAdapter from './lib/@auth/sequelize-adapter';
 import { InitSessionModel } from './server/models/session';
 import { InitVerificationTokenModel } from './server/models/verification-token';
 import { sendMailgunEmail } from './server/utils/mailgun';
+
+declare module 'next-auth' {
+  /**
+   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+   */
+  interface Session {
+    user: IUser & DefaultSession['user'];
+  }
+}
 
 export const nextAuthConfig: NextAuthConfig = {
   callbacks: {

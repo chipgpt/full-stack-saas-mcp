@@ -27,6 +27,7 @@ export default $config({
               }),
         },
         mailgun: '3.5.10',
+        stripe: '0.0.24',
       },
     };
   },
@@ -46,6 +47,9 @@ export default $config({
     if (!process.env.MAILGUN_API_KEY) {
       throw new Error('process.env.MAILGUN_API_KEY is required');
     }
+    if (!process.env.STRIPE_API_KEY) {
+      throw new Error('process.env.STRIPE_API_KEY is required');
+    }
 
     // Environment variables we will expose to the functions and nextjs app
     const environment = {
@@ -55,6 +59,7 @@ export default $config({
       WEB_URL: process.env.WEB_URL || 'http://localhost:3000',
       SENDER_DOMAIN: process.env.SENDER_DOMAIN || '',
       MAILGUN_API_KEY: process.env.MAILGUN_API_KEY || '',
+      STRIPE_API_KEY: process.env.STRIPE_API_KEY || '',
     };
 
     // Create Mailgun domain and verify DNS sending records
@@ -98,6 +103,54 @@ export default $config({
       properties: {
         key: environment.MAILGUN_API_KEY,
         domain: mailgunEmail.name,
+      },
+    });
+
+    // Stripe products and prices
+    const starterProduct = new stripe.Product('MyStarterProduct', {
+      name: 'Starter',
+      description: 'This is the starter plan',
+      features: ['Feature 1', 'Feature 2', 'Feature 3'],
+      url: 'https://chipgpt.biz',
+      taxCode: 'txcd_10000000',
+    });
+    const starterPrice = new stripe.Price('MyStarterPrice', {
+      product: starterProduct.id,
+      currency: 'usd',
+      unitAmount: 900,
+      taxBehaviour: 'exclusive',
+      recurring: {
+        interval: 'month',
+        intervalCount: 1,
+      },
+    });
+    const starterCoupon = new stripe.Coupon('MyStarterCoupon', {
+      name: 'First month discount',
+      amountOff: 800,
+      duration: 'once',
+      currency: 'usd',
+      appliesTos: [starterProduct.id],
+    });
+
+    const stripeWebhook = new stripe.WebhookEndpoint('MyStripeWebhook', {
+      url: `${environment.WEB_URL}/webhook/stripe`,
+      enabledEvents: [
+        'customer.subscription.created',
+        'customer.subscription.updated',
+        'customer.subscription.deleted',
+      ],
+    });
+
+    const stripeLinkable = new sst.Linkable('MyStripePlans', {
+      properties: {
+        apiKey: environment.STRIPE_API_KEY,
+        plans: {
+          starter: starterPrice.id,
+        },
+        coupons: {
+          starter: starterCoupon.id,
+        },
+        webhookSecret: stripeWebhook.secret,
       },
     });
 
@@ -148,7 +201,7 @@ export default $config({
         AUTH_TRUST_HOST: String(!!environment.WEB_URL),
         AUTH_URL: `${environment.WEB_URL}/api/auth`,
       },
-      link: [mailgunLinkable, pool, client].filter(Boolean),
+      link: [mailgunLinkable, stripeLinkable, pool, client].filter(Boolean),
       domain: process.env.CUSTOM_DOMAIN
         ? {
             name: process.env.CUSTOM_DOMAIN,

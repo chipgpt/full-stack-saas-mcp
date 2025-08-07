@@ -11,6 +11,8 @@ export interface IUser {
   emailVerified: Date;
   image: string;
   profile: IUserProfile;
+  plan: string | null;
+  stripeCustomerId: string | null;
 }
 
 export class User extends Model implements IUser {
@@ -20,6 +22,8 @@ export class User extends Model implements IUser {
   declare emailVerified: Date;
   declare image: string;
   declare profile: IUserProfile;
+  declare plan: string | null;
+  declare stripeCustomerId: string | null;
 }
 
 export function InitUserModel(sequelize: Sequelize) {
@@ -38,6 +42,16 @@ export function InitUserModel(sequelize: Sequelize) {
         type: DataTypes.JSONB,
         allowNull: false,
         defaultValue: { context: '' },
+      },
+      plan: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
+      },
+      stripeCustomerId: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
       },
     },
     {
