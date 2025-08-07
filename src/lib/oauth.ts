@@ -4,10 +4,10 @@ import OAuth2Server, {
   RefreshToken,
   Token,
 } from '@node-oauth/oauth2-server';
-import { OAuthAccessToken } from '@/server/models/oauth-access-token';
-import { OAuthAuthorizationCode } from '@/server/models/oauth-authorization-code';
-import { OAuthClient } from '@/server/models/oauth-client';
-import { User } from '@/server/models/user';
+import { OAuthAccessToken } from '../server/models/oauth-access-token';
+import { OAuthAuthorizationCode } from '../server/models/oauth-authorization-code';
+import { OAuthClient } from '../server/models/oauth-client';
+import { User } from '../server/models/user';
 
 export const oauthServer = new OAuth2Server({
   allowEmptyState: true,
