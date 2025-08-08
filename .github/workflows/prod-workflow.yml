@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - ".github/workflows/build.yml"
       - ".github/workflows/prod-workflow.yml"
       - "public/**"
       - "src/**"
