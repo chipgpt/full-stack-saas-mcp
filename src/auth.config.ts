@@ -94,6 +94,7 @@ export const getNextAuthConfig = async (): Promise<NextAuthConfig> => {
     ...nextAuthConfig,
     adapter: SequelizeAdapter(sequelize, {
       models: {
+        // @ts-expect-error
         User: InitUserModel(sequelize),
         // @ts-expect-error
         Account: InitAccountModel(sequelize),
