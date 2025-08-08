@@ -4,7 +4,7 @@ import { ISession } from './index';
 import { User } from '../models/user';
 import { MissingReadScopeError, MissingWriteScopeError, SafeError } from './errors';
 import { z } from 'zod';
-import { userProfileOutputSchema } from './schemas';
+import { userProfileOutputSchema, UserProfileOutputSchemaType } from './schemas';
 import { VaultGuess } from '../models/vault-guess';
 import { Vault } from '../models/vault';
 import { addHours, format, startOfHour } from 'date-fns';
@@ -66,7 +66,7 @@ export function registerTools(server: McpServer, userSession?: ISession) {
             throw new MissingWriteScopeError();
           }
 
-          return createToolResponse({
+          return createToolResponse<UserProfileOutputSchemaType>({
             profile: {
               id: userSession.user.id,
               name: userSession.user.name,

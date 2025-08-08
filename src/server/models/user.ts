@@ -6,10 +6,10 @@ export interface IUserProfile {
 
 export interface IUser {
   id: string;
-  name: string;
-  email: string;
-  emailVerified: Date;
-  image: string;
+  name: string | null;
+  email: string | null;
+  emailVerified: Date | null;
+  image: string | null;
   profile: IUserProfile;
   plan: string | null;
   stripeCustomerId: string | null;
@@ -17,10 +17,10 @@ export interface IUser {
 
 export class User extends Model implements IUser {
   declare id: string;
-  declare name: string;
-  declare email: string;
-  declare emailVerified: Date;
-  declare image: string;
+  declare name: string | null;
+  declare email: string | null;
+  declare emailVerified: Date | null;
+  declare image: string | null;
   declare profile: IUserProfile;
   declare plan: string | null;
   declare stripeCustomerId: string | null;
