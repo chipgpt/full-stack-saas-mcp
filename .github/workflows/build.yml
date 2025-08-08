@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/prod-workflow.yml'
+      - 'public/**'
+      - 'src/**'
+      - 'mcp-server.ts'
+      - 'next.config.mjs'
+      - 'package-lock.json'
+      - 'package.json'
+      - 'postcss.config.mjs'
+      - 'sst.config.ts'
+      - 'tailwind.config.ts'
+      - 'tsconfig.json'
+      - 'tsconfig.mcp-server.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
