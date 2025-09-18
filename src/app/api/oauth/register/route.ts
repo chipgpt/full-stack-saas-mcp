@@ -44,7 +44,7 @@ export const POST = handleRequest(async req => {
     {
       client_id: oauthClient.id,
       client_secret: oauthClient.secret,
-      client_id_issued_at: oauthClient.createdAt.getTime() / 1000,
+      client_id_issued_at: Math.round(oauthClient.createdAt.getTime() / 1000),
       client_secret_expires_at: 0,
       redirect_uris: oauthClient.redirectUris,
       scope: oauthClient.scope.join(' '),
