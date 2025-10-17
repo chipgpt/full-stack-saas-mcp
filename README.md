@@ -1,4 +1,4 @@
-# Example TypeScript Full Stack SaaS Web App w/ MCP
+# Example TypeScript Full Stack SaaS Web App w/ MCP + ChatGPT App
 
 I have been a software developer working on SaaS platforms for over 15 years. This example project compresses my years of knowledge into a fully functional Software as a Service (SaaS) platform that can be deployed to AWS using IaC and GitHub Actions. It's certainly not perfect, but I hope that this will help some up and coming SaaS entrepreneurs see a scalable, production-level build from end to end.
 
@@ -6,10 +6,11 @@ I have been a software developer working on SaaS platforms for over 15 years. Th
 
 ## The Stack:
 
-- Web App ([NextJS](https://nextjs.org/) + [AuthJS](https://authjs.dev/) + [React](https://react.dev/)) - Deployed to AWS Lambda
+- Web App ([NextJS](https://nextjs.org/) + [AuthJS](https://authjs.dev/) + [Tailwind CSS](https://tailwindcss.com/) + [React](https://react.dev/)) - Deployed to AWS Lambda + S3
 - REST API ([NextJS](https://nextjs.org/) + [AuthJS](https://authjs.dev/)) - Deployed to AWS Lambda
 - OAuth2 Authentication Server ([NextJS](https://nextjs.org/) + [@node-oauth/oauth2-server](https://github.com/node-oauth/node-oauth2-server)) - Deployed to AWS Lambda
-- MCP Server Cluster ([Express](https://expressjs.com/) + [MCP Typescript-SDK](https://github.com/modelcontextprotocol/typescript-sdk)) - Deployed to AWS ECS
+- MCP Server Cluster ([Express](https://expressjs.com/) + [MCP Typescript-SDK](https://github.com/modelcontextprotocol/typescript-sdk) + [OpenAI Apps SDK](https://developers.openai.com/apps-sdk)) - Deployed to AWS ECS
+- ChatGPT App UI ([esbuild](https://esbuild.github.io/) + [Tailwind CSS](https://tailwindcss.com/) + [React](https://react.dev/)) - Deployed to S3
 - Web Analytics ([PostHog](https://posthog.com/))
 
 ## Architecture:
@@ -31,7 +32,7 @@ The production cloud deployment without much activity is $1-$2 per day to run on
 - Your domain should be set up in Route 53 and you will need the Hosted Zone ID for cloud deployments (not needed for local deployments).
 - IAM user access key/secret [Setup Guide](https://guide.sst.dev/chapters/create-an-iam-user.html) and [Permissions Guide](https://sst.dev/docs/iam-credentials/#iam-permissions)
 - Mailgun Account [Get API Key](https://help.mailgun.com/hc/en-us/articles/203380100-Where-can-I-find-my-API-keys-and-SMTP-credentials)
-- Stripe Account [Get API Key] (https://docs.stripe.com/keys)
+- Stripe Account [Get API Key](https://docs.stripe.com/keys)
 
 You can do a global find for `chipgpt` (case insensitive) and locate most things that need to be updated with your own project name and description.
 
@@ -144,7 +145,7 @@ To get the GitHub action deployment working you will need an IAM user with acces
 
 - [x] ~~Add SES email management for production SES access~~ Add Mailgun email for sending emails
 - [x] Add a paid account tier (most likely using Stripe as the payment gateway)
-- [ ] Add a propper logging utility that works better with AWS CloudWatch.
+- [ ] Add a proper logging utility that works better with AWS CloudWatch.
 - [ ] Add Alarms/Alerts for cloud deployments to be proactive about issues.
 - [ ] Auto-Generate REST API Documentation.
 - [ ] Support for Amazon RDS + Proxy (had trouble getting it working with Sequelize, didn't feel like finding a new ORM)
