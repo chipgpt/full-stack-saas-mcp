@@ -2,6 +2,7 @@ import { handleRequest } from '@/lib/handle-request';
 import { NextResponse } from 'next/server';
 import { OAuthClient, OAuthClientScopeEnum } from '@/server/models/oauth-client';
 import { flatten } from 'lodash';
+import z from 'zod';
 
 export const POST = handleRequest(async req => {
   const body = await req.json();
