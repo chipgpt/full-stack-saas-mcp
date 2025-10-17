@@ -1,7 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-import { config } from 'dotenv';
-
 // Backend packages that should not be bundled
 const packages = ['aws-lambda', 'pg', 'sequelize', 'sharp', 'uuid'];
 
@@ -33,6 +31,8 @@ export default $config({
   },
   async run() {
     const isProductionStage = $app.stage === 'production';
+    const isDevelopmentStage = $app.stage === 'development';
+    const isCloudDeployment = isProductionStage || isDevelopmentStage;
 
     // Validate required environment vars
     if (!process.env.AUTH_SECRET) {
@@ -154,12 +154,6 @@ export default $config({
       },
     });
 
-    // Create our VPC and add EC2 internet gateway
-    const vpc = new sst.aws.Vpc('MyVpc', { nat: 'ec2' });
-    const cluster = new sst.aws.Cluster('MyCluster', {
-      vpc,
-    });
-
     // Create a DynamoDB table for the MCP session cache
     const dynamoMCPSessionCache = new sst.aws.Dynamo('MyDynamoMCPSessionCache', {
       fields: {
@@ -246,6 +240,12 @@ export default $config({
       },
     });
 
+    // Create our VPC and add EC2 internet gateway
+    const vpc = new sst.aws.Vpc('MyVpc', { nat: 'ec2' });
+    const cluster = new sst.aws.Cluster('MyCluster', {
+      vpc,
+    });
+
     const serviceMcp = new sst.aws.Service('MyMcpService', {
       cluster,
       image: {
@@ -321,6 +321,15 @@ export default $config({
         },
       },
     });
+
+    // Watches and builds the shared lib in local deployment only
+    if (!isCloudDeployment) {
+      new sst.aws.StaticSite('MyUISite', {
+        dev: {
+          command: 'npm run dev:ui',
+        },
+      });
+    }
 
     return {
       web_url: nextjs.url,

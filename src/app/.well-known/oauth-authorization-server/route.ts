@@ -1,23 +1,22 @@
 import { NextResponse } from 'next/server';
-
-const issuer =
-  process.env.NODE_ENV === 'production' ? 'https://chipgpt.biz' : 'http://localhost:3000';
+import { OAuthClientScopeEnum } from '../../../app/lib/oauth';
+import { CONFIG } from '../../../server/config';
 
 export async function GET() {
   return NextResponse.json(
     {
-      issuer: issuer,
-      authorization_endpoint: `${issuer}/authorize`,
-      token_endpoint: `${issuer}/api/oauth/token`,
-      registration_endpoint: `${issuer}/api/oauth/register`,
+      issuer: CONFIG.oauth.authorizationServer,
+      authorization_endpoint: `${CONFIG.oauth.authorizationServer}/authorize`,
+      token_endpoint: `${CONFIG.oauth.authorizationServer}/api/oauth/token`,
+      registration_endpoint: `${CONFIG.oauth.authorizationServer}/api/oauth/register`,
       token_endpoint_auth_methods_supported: ['client_secret_post'],
-      scopes_supported: ['read', 'write'],
+      scopes_supported: Object.values(OAuthClientScopeEnum),
       response_types_supported: ['code'],
       response_modes_supported: ['query'],
       grant_types_supported: ['authorization_code', 'refresh_token'],
       code_challenge_methods_supported: ['S256'],
-      op_policy_uri: `${issuer}/privacy-policy`,
-      op_tos_uri: `${issuer}/terms-of-service`,
+      op_policy_uri: `${CONFIG.oauth.authorizationServer}/privacy-policy`,
+      op_tos_uri: `${CONFIG.oauth.authorizationServer}/terms-of-service`,
     },
     { status: 200 }
   );

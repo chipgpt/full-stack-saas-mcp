@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn, useSession } from 'next-auth/react';
-import { useOAuthClient } from '../lib/oauth';
+import { OAuthClientScopeEnum, useOAuthClient } from '../lib/oauth';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense } from 'react';
 import { Checkbox } from '../_components/Checkbox';
@@ -44,35 +44,39 @@ function OAuthAuthorize() {
       .split(' ')
       .filter(Boolean)
       .map(scope => scope.split('+'))
-  );
+  ).filter(scope => Object.values<string>(OAuthClientScopeEnum).includes(scope));
 
   const scopes = [
-    { value: 'read', label: 'Allow application to read your profile' },
-    { value: 'write', label: 'Allow application to update your profile' },
+    { value: OAuthClientScopeEnum.Read, label: 'Allow application to read your profile' },
+    { value: OAuthClientScopeEnum.Write, label: 'Allow application to update your profile' },
   ];
 
   // State for selected scopes
   const [selectedScopes, setSelectedScopes] = React.useState<string[]>(requestedScopes);
 
   const handleScopeChange = (scope: string, checked: boolean) => {
-    if (scope === 'read') {
+    if (scope === OAuthClientScopeEnum.Read) {
       if (!checked) {
         // If unchecking 'read', also uncheck 'write'
-        setSelectedScopes(prev => prev.filter(s => s !== 'read' && s !== 'write'));
+        setSelectedScopes(prev =>
+          prev.filter(s => s !== OAuthClientScopeEnum.Read && s !== OAuthClientScopeEnum.Write)
+        );
       } else {
-        setSelectedScopes(prev => (prev.includes('read') ? prev : [...prev, 'read']));
+        setSelectedScopes(prev =>
+          prev.includes(OAuthClientScopeEnum.Read) ? prev : [...prev, OAuthClientScopeEnum.Read]
+        );
       }
-    } else if (scope === 'write') {
+    } else if (scope === OAuthClientScopeEnum.Write) {
       if (checked) {
         // If checking 'write', ensure 'read' is also checked
         setSelectedScopes(prev => {
           const next = [...prev];
-          if (!next.includes('read')) next.push('read');
-          if (!next.includes('write')) next.push('write');
+          if (!next.includes(OAuthClientScopeEnum.Read)) next.push(OAuthClientScopeEnum.Read);
+          if (!next.includes(OAuthClientScopeEnum.Write)) next.push(OAuthClientScopeEnum.Write);
           return next;
         });
       } else {
-        setSelectedScopes(prev => prev.filter(s => s !== 'write'));
+        setSelectedScopes(prev => prev.filter(s => s !== OAuthClientScopeEnum.Write));
       }
     }
   };
@@ -102,7 +106,10 @@ function OAuthAuthorize() {
                       label={scope.label}
                       value={selectedScopes.includes(scope.value)}
                       onChangeChecked={checked => handleScopeChange(scope.value, checked)}
-                      disabled={scope.value === 'write' && !selectedScopes.includes('read')}
+                      disabled={
+                        scope.value === OAuthClientScopeEnum.Write &&
+                        !selectedScopes.includes(OAuthClientScopeEnum.Read)
+                      }
                     />
                   </li>
                 ))}

@@ -12,7 +12,7 @@ import { oauthServer } from '../../lib/oauth';
 const sequelize = getSequelizeConnection(false);
 sequelize.sync({ alter: { drop: false } });
 
-export interface ISession {
+export interface IUserSession {
   userId: string;
   sessionType: string;
   scope: string[];
@@ -22,12 +22,12 @@ export interface ISession {
 }
 
 // Cache for OAuth 2.1 tokens
-const sessionCache = new Map<string, ISession>();
+const sessionCache = new Map<string, IUserSession>();
 
 declare global {
   namespace Express {
     export interface Request {
-      authInfo?: ISession;
+      authInfo?: IUserSession;
     }
   }
 }
@@ -58,7 +58,7 @@ app.get(['/', '/health'], (req, res) => {
 app.use(
   rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minutes
-    max: 10, // Limit each IP to 10 requests per `windowMs`
+    max: 20, // Limit each IP to 20 requests per `windowMs`
     message: 'Too many requests, please try again later.',
     standardHeaders: true,
   })
@@ -103,7 +103,7 @@ app.use(async (req, res, next) => {
     throw e;
   }
 
-  const newSession: ISession = {
+  const newSession: IUserSession = {
     userId: oauthAccessToken.user.id,
     sessionType: 'oauth',
     scope: oauthAccessToken.scope || [],
@@ -124,10 +124,10 @@ app.post('/mcp', (req, res) => transportHandler(req.authInfo)(req, res));
 app.post('/mcp/vault', (req, res) => transportHandler(req.authInfo, 'vault')(req, res));
 
 // Handle GET requests for server-to-client notifications via SSE
-app.get(['/mcp', '/mcp/vault'], sessionHandler);
+app.get(['/mcp', '/mcp/vault'], (req, res) => sessionHandler(req.authInfo)(req, res));
 
 // Handle DELETE requests for session termination
-app.delete(['/mcp', '/mcp/vault'], sessionHandler);
+app.delete(['/mcp', '/mcp/vault'], (req, res) => sessionHandler(req.authInfo)(req, res));
 
 app.listen(3333, () => {
   console.log('MCP server is running on port 3333');

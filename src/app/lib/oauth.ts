@@ -2,6 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { handleAxiosError, getAxios } from './axios';
 import { IOAuthClient } from '@/server/models/oauth-client';
 
+export enum OAuthClientGrantEnum {
+  AuthorizationCode = 'authorization_code',
+  RefreshToken = 'refresh_token',
+}
+
+export enum OAuthClientScopeEnum {
+  Read = 'read',
+  Write = 'write',
+}
+
 export const useOAuthClient = (params: { id: string }) => {
   const axios = getAxios();
 

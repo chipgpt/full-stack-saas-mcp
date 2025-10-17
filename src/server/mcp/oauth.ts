@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { CONFIG } from '../config';
+import { OAuthClientScopeEnum } from '../models/oauth-client';
 
 export const oauthMetadata = (req: Request, res: Response) => {
   const metadata = {
@@ -11,7 +12,7 @@ export const oauthMetadata = (req: Request, res: Response) => {
         : req.protocol + '://' + req.host + '/mcp',
     authorization_servers: [CONFIG.oauth.authorizationServer],
     bearer_methods_supported: ['header'],
-    scopes_supported: ['read', 'write'],
+    scopes_supported: Object.values(OAuthClientScopeEnum),
     resource_policy_uri: 'https://chipgpt.biz/privacy-policy',
     resource_tos_uri: 'https://chipgpt.biz/terms-of-service',
   };
@@ -26,7 +27,7 @@ export const oauthAuthorizationServer = (req: Request, res: Response) => {
     token_endpoint: `${CONFIG.oauth.authorizationServer}/api/oauth/token`,
     registration_endpoint: `${CONFIG.oauth.authorizationServer}/api/oauth/register`,
     token_endpoint_auth_methods_supported: ['client_secret_post'],
-    scopes_supported: ['read'],
+    scopes_supported: Object.values(OAuthClientScopeEnum),
     response_types_supported: ['code'],
     response_modes_supported: ['query'],
     grant_types_supported: ['authorization_code', 'refresh_token'],

@@ -3,11 +3,17 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 export interface IVault {
   id: string;
   name: string;
+  /** The minimum value of the vault combination */
   min: number;
+  /** The maximum value of the vault combination */
   max: number;
+  /** The combination of the vault */
   key: number;
+  /** The reward value (USD) of the vault */
   value: number;
+  /** The date and time the vault was opened */
   openedAt: Date | null;
+  /** The ID of the winning vault guess */
   winningVaultGuessId: string | null;
 }
 
