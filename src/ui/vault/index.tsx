@@ -118,7 +118,7 @@ function App() {
           </div>
           {activeVault.guessed ? (
             <div>
-              <strong>You've already guessed this hour</strong> You can guess again next hour.
+              <strong>You&apos;ve already guessed this hour</strong> You can guess again next hour.
             </div>
           ) : (
             <div>
