@@ -1,7 +1,6 @@
 import { handleRequest } from '@/lib/handle-request';
 import { NextResponse } from 'next/server';
-import z from 'zod';
-import { OAuthClient } from '@/server/models/oauth-client';
+import { OAuthClient, OAuthClientScopeEnum } from '@/server/models/oauth-client';
 import { flatten } from 'lodash';
 
 export const POST = handleRequest(async req => {
@@ -29,7 +28,13 @@ export const POST = handleRequest(async req => {
     );
   }
 
-  const scope = flatten(result.data.scope?.split(' ').filter(Boolean).map(s => s.split('+'))) || ['read', 'write'];
+  const scope =
+    flatten(
+      result.data.scope
+        ?.split(' ')
+        .filter(Boolean)
+        .map(s => s.split('+'))
+    ) || Object.values(OAuthClientScopeEnum);
   const oauthClient = await OAuthClient.create({
     redirectUris: result.data.redirect_uris,
     grants: result.data.grant_types,

@@ -18,7 +18,7 @@ export const POST = handleRequest(async req => {
   });
 
   return NextResponse.json(
-    { ...result, scope: result.scope?.join(','), token_type: 'Bearer' },
+    { ...result, scope: result.scope?.join(' '), token_type: 'Bearer' },
     response
   );
 });

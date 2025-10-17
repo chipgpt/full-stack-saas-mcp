@@ -19,6 +19,7 @@ export const GET = handleRequest(async req => {
       session.customer &&
       typeof session.customer !== 'string' &&
       !session.customer.deleted &&
+      session.client_reference_id &&
       session.subscription &&
       typeof session.subscription !== 'string'
     ) {

@@ -14,7 +14,7 @@ export async function GET() {
           id: 'chipgpt-mcp',
           name: 'ChipGPT MCP',
           endpoint: endpoint,
-          capabilities: ['resourced', 'tools'],
+          capabilities: ['resources', 'tools'],
           authType: 'oauth2',
         },
       ],

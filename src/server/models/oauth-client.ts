@@ -1,13 +1,13 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
-export enum OAuthClientGrant {
-  AUTHORIZATION_CODE = 'authorization_code',
-  REFRESH_TOKEN = 'refresh_token',
+export enum OAuthClientGrantEnum {
+  AuthorizationCode = 'authorization_code',
+  RefreshToken = 'refresh_token',
 }
 
-export enum OAuthClientScope {
-  READ = 'read',
-  WRITE = 'write',
+export enum OAuthClientScopeEnum {
+  Read = 'read',
+  Write = 'write',
 }
 
 export interface IOAuthClient {
@@ -16,8 +16,8 @@ export interface IOAuthClient {
   uri: string;
   secret: string;
   redirectUris: string[];
-  grants: OAuthClientGrant[];
-  scope: OAuthClientScope[];
+  grants: OAuthClientGrantEnum[];
+  scope: OAuthClientScopeEnum[];
   accessTokenLifetime: number;
   refreshTokenLifetime: number;
   userId: string | null;
@@ -32,8 +32,8 @@ export class OAuthClient extends Model implements IOAuthClient {
   declare uri: string;
   declare secret: string;
   declare redirectUris: string[];
-  declare grants: OAuthClientGrant[];
-  declare scope: OAuthClientScope[];
+  declare grants: OAuthClientGrantEnum[];
+  declare scope: OAuthClientScopeEnum[];
   declare accessTokenLifetime: number;
   declare refreshTokenLifetime: number;
   declare userId: string | null;
