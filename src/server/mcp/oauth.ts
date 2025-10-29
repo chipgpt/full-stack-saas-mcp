@@ -34,6 +34,7 @@ export const oauthAuthorizationServer = (req: Request, res: Response) => {
     code_challenge_methods_supported: ['S256'],
     op_policy_uri: `${CONFIG.oauth.authorizationServer}/privacy-policy`,
     op_tos_uri: `${CONFIG.oauth.authorizationServer}/terms-of-service`,
+    client_id_metadata_document_supported: true,
   };
 
   res.json(metadata);

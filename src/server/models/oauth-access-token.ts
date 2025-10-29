@@ -60,7 +60,7 @@ export function InitOAuthAccessTokenModel(sequelize: Sequelize) {
         allowNull: false,
       },
       clientId: {
-        type: DataTypes.UUID,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       userId: {

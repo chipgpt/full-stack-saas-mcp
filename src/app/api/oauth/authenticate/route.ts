@@ -16,16 +16,19 @@ export const GET = handleRequest(async req => {
 
   let userId: string | undefined;
   try {
-    const data = await oauthServer.authenticate(request, response);
-    userId = data.user.id;
+    const token = await oauthServer.authenticate(request, response);
+    userId = token.user.id;
     if (!userId) throw new Error('User not found');
     const user = await User.findOne({ where: { id: userId } });
     if (!user) throw new Error('User not found');
     return NextResponse.json({ id: user.id, name: user.name, profile: user.profile }, response);
   } catch (err) {
-    return NextResponse.json(err instanceof Error ? { error: err.message } : err, {
-      ...response,
-      status: (err instanceof OAuthError && err.code) || 500,
-    });
+    return NextResponse.json(
+      err instanceof Error ? { error: 'invalid_token', error_description: err.message } : err,
+      {
+        ...response,
+        status: (err instanceof OAuthError && err.code) || 500,
+      }
+    );
   }
 });

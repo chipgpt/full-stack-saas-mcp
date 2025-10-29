@@ -2,21 +2,11 @@ import { handleRequest } from '@/lib/handle-request';
 import { NextResponse } from 'next/server';
 import { OAuthClient, OAuthClientScopeEnum } from '@/server/models/oauth-client';
 import { flatten } from 'lodash';
-import z from 'zod';
+import { createClientSchema } from '@/lib/oauth';
 
 export const POST = handleRequest(async req => {
   const body = await req.json();
-  const result = z
-    .object({
-      redirect_uris: z.array(z.string().url()).min(1),
-      token_endpoint_auth_method: z.enum(['none', 'client_secret_basic', 'client_secret_post']),
-      grant_types: z.array(z.string()).min(1),
-      response_types: z.array(z.enum(['code', 'token'])).min(1),
-      client_name: z.string().min(1),
-      client_uri: z.string().url().optional(),
-      scope: z.string().default('read').optional(),
-    })
-    .safeParse(body);
+  const result = createClientSchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
       {
@@ -53,7 +43,10 @@ export const POST = handleRequest(async req => {
       client_id_issued_at: Math.round(oauthClient.createdAt.getTime() / 1000),
       client_secret_expires_at: 0,
       redirect_uris: oauthClient.redirectUris,
+      grants: oauthClient.grants,
       scope: oauthClient.scope.join(' '),
+      client_name: oauthClient.name,
+      client_uri: oauthClient.uri,
     },
     {
       status: 201,

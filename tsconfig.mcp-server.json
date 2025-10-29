@@ -3,6 +3,7 @@
     "target": "esnext",
     "module": "commonjs",
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -16,6 +17,7 @@
     "esModuleInterop": true,
     "outDir": "./dist-mcp-server"
   },
-  "include": ["./mcp-server.ts", "./sst-env.d.ts"],
-  "exclude": ["node_modules"]
+  "ts-node": {
+    "files": true
+  }
 }
