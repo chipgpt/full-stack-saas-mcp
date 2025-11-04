@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { isSSRFSafeURL } from 'ssrfcheck';
 import { Resolver } from 'node:dns/promises';
 import { isIP } from 'node:net';
-import { getClientMetadata, setClientMetadata } from '@/server/utils/aws';
+import { getClientMetadata, setClientMetadata } from '../server/utils/aws';
 
 const resolver = new Resolver();
 resolver.setServers(['1.1.1.1']); // Use Cloudflare public DNS

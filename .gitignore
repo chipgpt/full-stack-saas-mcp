@@ -45,3 +45,5 @@ docker/data
 
 # open-next
 .open-next
+
+dist-mcp-server
