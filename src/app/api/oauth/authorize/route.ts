@@ -5,6 +5,7 @@ import { Request, Response } from '@node-oauth/oauth2-server';
 import { auth } from '@/auth';
 
 export const GET = handleRequest(async req => {
+  console.log(req.nextUrl);
   const request = new Request({
     headers: Object.fromEntries(req.headers),
     method: req.method,
@@ -12,6 +13,7 @@ export const GET = handleRequest(async req => {
   });
   const nextResponse = NextResponse.next();
   const response = new Response(nextResponse);
+  console.log(request);
 
   // The user must be logged in to our service
   // to be able to get an OAuth authorization code
