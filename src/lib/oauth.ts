@@ -158,6 +158,7 @@ export const oauthServer = new OAuth2Server({
       return requestedScopes.every(scope => authorizedScopes.includes(scope));
     },
     async validateRedirectUri(redirectUri, client) {
+      console.log(redirectUri, client.redirectUris);
       return !!client.redirectUris?.includes(redirectUri);
     },
   }, // See https://github.com/oauthjs/node-oauth2-server for specification
@@ -245,10 +246,10 @@ export async function getClient(clientId: string, clientSecret?: string) {
       throw new Error('Client ID mismatch');
     }
 
-    // # 8. Save the client metadata to the cache and database
-    await setClientMetadata(clientId, result.data);
+    // # 8. Save the client metadata to the database and cache
     const oauthClient = convertClientMetadataToOAuthClient(result.data);
     await OAuthClient.upsert(oauthClient);
+    await setClientMetadata(clientId, result.data);
 
     return oauthClient;
   }

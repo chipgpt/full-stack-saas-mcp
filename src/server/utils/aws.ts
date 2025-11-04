@@ -22,7 +22,7 @@ export async function setSession(key: string, value: IMcpSession) {
       Item: {
         sessionId: key,
         value: JSON.stringify(value),
-        expiresAt: addMinutes(new Date(), 5).getTime(),
+        expiresAt: Math.floor(addMinutes(new Date(), 5).getTime() / 1000),
       },
     })
   );
@@ -62,7 +62,7 @@ export async function setClientMetadata(key: string, value: IOauthClientMetadata
       Item: {
         clientId: key,
         value: JSON.stringify(value),
-        expiresAt: addMinutes(new Date(), 10).getTime(),
+        expiresAt: Math.floor(addMinutes(new Date(), 10).getTime() / 1000),
       },
     })
   );
