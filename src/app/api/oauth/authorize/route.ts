@@ -5,6 +5,8 @@ import { Request, Response } from '@node-oauth/oauth2-server';
 import { auth } from '@/auth';
 
 export const GET = handleRequest(async req => {
+  console.log(req.url);
+  console.log(new URL(req.url));
   console.log(req.nextUrl);
   const request = new Request({
     headers: Object.fromEntries(req.headers),
