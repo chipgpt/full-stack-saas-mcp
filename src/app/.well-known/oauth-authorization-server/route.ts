@@ -9,7 +9,7 @@ export async function GET() {
       authorization_endpoint: `${CONFIG.oauth.authorizationServer}/authorize`,
       token_endpoint: `${CONFIG.oauth.authorizationServer}/api/oauth/token`,
       registration_endpoint: `${CONFIG.oauth.authorizationServer}/api/oauth/register`,
-      token_endpoint_auth_methods_supported: ['client_secret_post'],
+      token_endpoint_auth_methods_supported: ['client_secret_post', 'none'],
       scopes_supported: Object.values(OAuthClientScopeEnum),
       response_types_supported: ['code'],
       response_modes_supported: ['query'],
