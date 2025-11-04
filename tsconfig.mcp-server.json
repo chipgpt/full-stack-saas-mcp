@@ -15,8 +15,11 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
-    "outDir": "./dist-mcp-server"
+    "outDir": "./dist-mcp-server",
+    "typeRoots": ["./types"]
   },
+  "include": ["./mcp-server.ts", "./sst-env.d.ts"],
+  "exclude": ["node_modules"],
   "ts-node": {
     "files": true
   }
