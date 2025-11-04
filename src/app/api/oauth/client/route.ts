@@ -1,5 +1,5 @@
 import { handleRequest } from '@/lib/handle-request';
-import { OAuthClient } from '@/server/models/oauth-client';
+import { getClient } from '@/lib/oauth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = handleRequest(async (request: NextRequest) => {
@@ -8,10 +8,7 @@ export const GET = handleRequest(async (request: NextRequest) => {
     return NextResponse.json({ error: 'Client ID is required' }, { status: 400 });
   }
 
-  const client = await OAuthClient.findByPk(id);
-  if (!client) {
-    return NextResponse.json({ error: 'Client not found' }, { status: 404 });
-  }
+  const client = await getClient(id);
 
   return NextResponse.json({
     data: {

@@ -9,6 +9,7 @@ import { once } from 'lodash';
 import { Resource } from 'sst';
 import { addMinutes } from 'date-fns';
 import { IMcpSession } from '../mcp/tools';
+import { IOauthClientMetadata } from '../../lib/oauth';
 
 export const getDynamoDBClient = once(() => {
   return DynamoDBDocumentClient.from(new DynamoDBClient({}));
@@ -17,7 +18,6 @@ export const getDynamoDBClient = once(() => {
 export async function setSession(key: string, value: IMcpSession) {
   await getDynamoDBClient().send(
     new PutCommand({
-      // @ts-ignore  - for some reason it doesn't like this when building
       TableName: Resource.MyDynamoMCPSessionCache.name,
       Item: {
         sessionId: key,
@@ -32,7 +32,6 @@ export async function setSession(key: string, value: IMcpSession) {
 export async function getSession(key: string) {
   const result = await getDynamoDBClient().send(
     new QueryCommand({
-      // @ts-ignore  - for some reason it doesn't like this when building
       TableName: Resource.MyDynamoMCPSessionCache.name,
       KeyConditionExpression: 'sessionId = :sessionId',
       ExpressionAttributeValues: {
@@ -50,9 +49,39 @@ export async function getSession(key: string) {
 export async function deleteSession(key: string) {
   return getDynamoDBClient().send(
     new DeleteCommand({
-      // @ts-ignore  - for some reason it doesn't like this when building
       TableName: Resource.MyDynamoMCPSessionCache.name,
       Key: { sessionId: key },
     })
   );
+}
+
+export async function setClientMetadata(key: string, value: IOauthClientMetadata) {
+  await getDynamoDBClient().send(
+    new PutCommand({
+      TableName: Resource.MyDynamoClientMetadataCache.name,
+      Item: {
+        clientId: key,
+        value: JSON.stringify(value),
+        expiresAt: addMinutes(new Date(), 10).getTime(),
+      },
+    })
+  );
+  return value;
+}
+
+export async function getClientMetadata(key: string) {
+  const result = await getDynamoDBClient().send(
+    new QueryCommand({
+      TableName: Resource.MyDynamoClientMetadataCache.name,
+      KeyConditionExpression: 'clientId = :clientId',
+      ExpressionAttributeValues: {
+        ':clientId': key,
+      },
+    })
+  );
+  if (result.Items?.length) {
+    const clientMetadata = JSON.parse(result.Items[0].value) as IOauthClientMetadata;
+    return clientMetadata;
+  }
+  return null;
 }

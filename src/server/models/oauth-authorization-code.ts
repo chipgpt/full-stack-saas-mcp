@@ -57,7 +57,7 @@ export function InitOAuthAuthorizationCodeModel(sequelize: Sequelize) {
         allowNull: false,
       },
       clientId: {
-        type: DataTypes.UUID,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       userId: {

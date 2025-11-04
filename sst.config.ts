@@ -163,6 +163,14 @@ export default $config({
       ttl: 'expiresAt',
     });
 
+    const dynamoClientMetadataCache = new sst.aws.Dynamo('MyDynamoClientMetadataCache', {
+      fields: {
+        clientId: 'string',
+      },
+      primaryIndex: { hashKey: 'clientId' },
+      ttl: 'expiresAt',
+    });
+
     // Create Cognito authentication
     const pool = new sst.aws.CognitoUserPool('MyUserPool', {
       usernames: ['email'],
@@ -186,6 +194,10 @@ export default $config({
 
     // Create NextJS web deployment
     const nextjs = new sst.aws.Nextjs('MyWeb', {
+      dev: {
+        command: 'npm run dev',
+        url: environment.WEB_URL,
+      },
       environment: {
         ...environment,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY || '',
@@ -195,7 +207,9 @@ export default $config({
         AUTH_TRUST_HOST: String(!!environment.WEB_URL),
         AUTH_URL: `${environment.WEB_URL}/api/auth`,
       },
-      link: [mailgunLinkable, stripeLinkable, pool, client].filter(Boolean),
+      link: [mailgunLinkable, stripeLinkable, pool, client, dynamoClientMetadataCache].filter(
+        Boolean
+      ),
       domain: process.env.CUSTOM_DOMAIN
         ? {
             name: process.env.CUSTOM_DOMAIN,
@@ -247,6 +261,9 @@ export default $config({
     });
 
     const serviceMcp = new sst.aws.Service('MyMcpService', {
+      dev: {
+        command: 'npm run dev:mcp',
+      },
       cluster,
       image: {
         dockerfile: './Dockerfile.mcp',
@@ -279,9 +296,6 @@ export default $config({
       memory: '1 GB',
       environment: environment,
       link: [mailgunLinkable, dynamoMCPSessionCache].filter(Boolean),
-      dev: {
-        command: 'npm run dev:mcp',
-      },
       transform: {
         taskDefinition(args) {
           args.containerDefinitions = $resolve([args.containerDefinitions]).apply(

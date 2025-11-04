@@ -46,7 +46,7 @@ export function InitOAuthClientModel(sequelize: Sequelize) {
   return OAuthClient.init(
     {
       id: {
-        type: DataTypes.UUID,
+        type: DataTypes.TEXT,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },

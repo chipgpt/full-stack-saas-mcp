@@ -7,11 +7,15 @@ on:
       - ".github/workflows/prod-workflow.yml"
       - "public/**"
       - "src/**"
+      - 'types/**'
+      - '.dockerignore'
+      - 'Dockerfile.mcp'
       - "mcp-server.ts"
       - "next.config.mjs"
       - "package-lock.json"
       - "package.json"
       - "postcss.config.mjs"
+      - 'sst-env.d.ts'
       - "sst.config.ts"
       - "tailwind.config.ts"
       - "tsconfig.json"
