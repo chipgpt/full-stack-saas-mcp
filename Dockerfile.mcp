@@ -14,8 +14,10 @@ RUN npm ci
 
 # Copy directories
 COPY src /app/src
-COPY tsconfig.mcp-server.json /app/tsconfig.mcp-server.json
+COPY types /app/types
 COPY mcp-server.ts /app/mcp-server.ts
+COPY sst-env.d.ts /app/sst-env.d.ts
+COPY tsconfig.mcp-server.json /app/tsconfig.mcp-server.json
 
 # Build
 RUN npm run build:mcp
