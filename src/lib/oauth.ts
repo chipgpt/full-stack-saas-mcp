@@ -11,9 +11,12 @@ import { User } from '../server/models/user';
 import axios from 'axios';
 import { z } from 'zod';
 import { isSSRFSafeURL } from 'ssrfcheck';
-import { resolve } from 'node:dns/promises';
+import { Resolver } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import { getClientMetadata, setClientMetadata } from '@/server/utils/aws';
+
+const resolver = new Resolver();
+resolver.setServers(['1.1.1.1']); // Use Cloudflare public DNS
 
 export const oauthServer = new OAuth2Server({
   allowEmptyState: true,
@@ -171,18 +174,23 @@ export async function getClient(clientId: string, clientSecret?: string) {
   // If the clientId is a valid url, do SSRF check and fetch client metadata
   if (url) {
     // # 2. Check the cache
-    const cachedClientMetadata = await getClientMetadata(url.toString());
+    const cachedClientMetadata = await getClientMetadata(clientId);
     if (cachedClientMetadata) {
       return convertClientMetadataToOAuthClient(cachedClientMetadata);
     }
 
     // # 2. If it's a domain name then resolve the IP to check it directly
+    const originalHostname = url.hostname;
     if (!isIP(url.hostname)) {
       // Resolve the IP from DNS
-      const resolvedIps = await resolve(url.hostname, 'A');
-      const ipAddress = resolvedIps.find(Boolean);
+      const resolvedIps = await resolver.resolve4(url.hostname);
+      let ipAddress = resolvedIps.find(Boolean);
       if (!ipAddress) {
-        throw new Error('Client URL is not valid');
+        const resolvedIps = await resolver.resolve6(url.hostname);
+        ipAddress = resolvedIps.find(Boolean);
+        if (!ipAddress) {
+          throw new Error('Client URL is not valid');
+        }
       }
       // Replace the hostname with the resolved IP Address
       url.hostname = ipAddress;
@@ -207,7 +215,7 @@ export async function getClient(clientId: string, clientSecret?: string) {
         headers: {
           Accept: 'application/json',
           // use the original url domain hostname
-          Host: new URL(clientId).hostname,
+          Host: originalHostname,
         },
       });
     } catch (e) {
@@ -238,7 +246,7 @@ export async function getClient(clientId: string, clientSecret?: string) {
     }
 
     // # 8. Save the client metadata to the cache and database
-    await setClientMetadata(url.toString(), result.data);
+    await setClientMetadata(clientId, result.data);
     const oauthClient = convertClientMetadataToOAuthClient(result.data);
     await OAuthClient.upsert(oauthClient);
 

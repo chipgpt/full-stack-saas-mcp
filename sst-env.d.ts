@@ -5,6 +5,10 @@
 
 declare module "sst" {
   export interface Resource {
+    "MyDynamoClientMetadataCache": {
+      "name": string
+      "type": "sst.aws.Dynamo"
+    }
     "MyDynamoMCPSessionCache": {
       "name": string
       "type": "sst.aws.Dynamo"
