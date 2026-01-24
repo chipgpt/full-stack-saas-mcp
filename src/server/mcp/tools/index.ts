@@ -62,14 +62,17 @@ export function registerTools(
           throw new SafeError('User not found');
         }
 
-        return createToolResponse<UserProfileOutputSchemaType>({
-          profile: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            context: user.profile.context,
+        return createToolResponse<UserProfileOutputSchemaType>(
+          {
+            profile: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              context: user.profile.context,
+            },
           },
-        });
+          'Here is your profile information.'
+        );
       })
   );
 
@@ -151,17 +154,20 @@ export function registerVaultTools(
           },
         });
 
-        return createToolResponse<VaultOutputSchemaType>({
-          vault: {
-            id: vault.id,
-            name: vault.name,
-            min: vault.min,
-            max: vault.max,
-            value: vault.value,
-            openedAt: vault.openedAt,
-            guessed: !!vaultGuess,
+        return createToolResponse<VaultOutputSchemaType>(
+          {
+            vault: {
+              id: vault.id,
+              name: vault.name,
+              min: vault.min,
+              max: vault.max,
+              value: vault.value,
+              openedAt: vault.openedAt,
+              guessed: !!vaultGuess,
+            },
           },
-        });
+          'Here is the current vault information.'
+        );
       })
   );
 
@@ -246,13 +252,13 @@ export function registerVaultTools(
   );
 }
 
-function createToolResponse<T extends Object>(content: T) {
+function createToolResponse<T extends Object>(structuredContent: T, content?: string) {
   return {
-    structuredContent: content,
+    structuredContent: structuredContent,
     content: [
       {
         type: 'text' as const,
-        text: JSON.stringify(content),
+        text: content || JSON.stringify(structuredContent),
       },
     ],
   };
