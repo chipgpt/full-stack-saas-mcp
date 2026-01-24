@@ -5,9 +5,6 @@ import { Request, Response } from '@node-oauth/oauth2-server';
 import { auth } from '@/auth';
 
 export const GET = handleRequest(async req => {
-  console.log(req.url);
-  console.log(new URL(req.url));
-  console.log(req.nextUrl);
   const request = new Request({
     headers: Object.fromEntries(req.headers),
     method: req.method,
@@ -15,7 +12,15 @@ export const GET = handleRequest(async req => {
   });
   const nextResponse = NextResponse.next();
   const response = new Response(nextResponse);
-  console.log(request);
+
+  // Something is converting the incoming redirect_uri from "127.0.0.1" to "localhost"
+  // This uses the referer header to get the original redirect_uri if available.
+  if (req.headers.has('referer')) {
+    const refererUrl = new URL(req.headers.get('referer') || '');
+    if (refererUrl.searchParams.has('redirect_uri') && request.query) {
+      request.query.redirect_uri = refererUrl.searchParams.get('redirect_uri') || '';
+    }
+  }
 
   // The user must be logged in to our service
   // to be able to get an OAuth authorization code

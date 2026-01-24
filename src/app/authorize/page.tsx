@@ -81,6 +81,12 @@ function OAuthAuthorize() {
     }
   };
 
+  const redirectUri = oauthClient?.redirectUris.find(
+    uri => searchParams.get('redirect_uri') === uri
+  );
+  const redirectUrl = redirectUri ? new URL(redirectUri) : null;
+  const clientUri = oauthClient ? new URL(oauthClient.uri) : null;
+
   return (
     <main className="flex-1 flex items-center justify-center relative z-10">
       <div className="w-full max-w-lg mx-auto p-8 rounded-2xl shadow-2xl border flex flex-col items-center gap-8">
@@ -133,10 +139,20 @@ function OAuthAuthorize() {
                   </span>
                 )}
               You will be redirected to the following URL after approval:{' '}
-              <a href={oauthClient.redirectUris[0]} target="_blank" rel="noopener noreferrer">
-                {oauthClient.redirectUris[0]}
-              </a>
+              {redirectUrl ? (
+                <a href={redirectUrl.toString()} target="_blank" rel="noopener noreferrer">
+                  {redirectUrl.toString()}
+                </a>
+              ) : (
+                <span className="text-red-500">No valid redirect URL found</span>
+              )}
             </p>
+            {redirectUrl && clientUri && redirectUrl.hostname !== clientUri.hostname && (
+              <p className="text-sm text-red-500 text-center">
+                The redirect hostname ({redirectUrl.hostname}) does not match the client hostname (
+                {clientUri.hostname})
+              </p>
+            )}
           </div>
         ) : (
           <button

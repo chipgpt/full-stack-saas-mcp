@@ -31,35 +31,35 @@ const nextConfig = {
       },
     ];
   },
-  headers: async () => {
-    // in Production, AWS CloudFront handles CORS so we don't need to set it here
-    return process.env.NODE_ENV === 'production'
-      ? []
-      : [
-          {
-            source: '/api/oauth/:path*',
-            headers: [
-              { key: 'Access-Control-Allow-Origin', value: '*' },
-              { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
-              {
-                key: 'Access-Control-Allow-Headers',
-                value: 'Content-Type, Authorization, mcp-protocol-version',
-              },
-            ],
-          },
-          {
-            source: '/.well-known/:path*',
-            headers: [
-              { key: 'Access-Control-Allow-Origin', value: '*' },
-              { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
-              {
-                key: 'Access-Control-Allow-Headers',
-                value: 'Content-Type, Authorization, mcp-protocol-version',
-              },
-            ],
-          },
-        ];
-  },
+  headers:
+    process.env.NODE_ENV === 'production'
+      ? undefined // in Production, AWS CloudFront handles CORS so we don't need to set it here
+      : async () => {
+          return [
+            {
+              source: '/api/oauth/:path*',
+              headers: [
+                { key: 'Access-Control-Allow-Origin', value: '*' },
+                { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+                {
+                  key: 'Access-Control-Allow-Headers',
+                  value: 'Content-Type, Authorization, mcp-protocol-version',
+                },
+              ],
+            },
+            {
+              source: '/.well-known/:path*',
+              headers: [
+                { key: 'Access-Control-Allow-Origin', value: '*' },
+                { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+                {
+                  key: 'Access-Control-Allow-Headers',
+                  value: 'Content-Type, Authorization, mcp-protocol-version',
+                },
+              ],
+            },
+          ];
+        },
 };
 
 export default nextConfig;
