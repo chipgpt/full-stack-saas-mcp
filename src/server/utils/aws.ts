@@ -34,8 +34,10 @@ export async function getSession(key: string) {
     new QueryCommand({
       TableName: Resource.MyDynamoMCPSessionCache.name,
       KeyConditionExpression: 'sessionId = :sessionId',
+      FilterExpression: 'expiresAt > :now',
       ExpressionAttributeValues: {
         ':sessionId': key,
+        ':now': Math.floor(new Date().getTime() / 1000),
       },
     })
   );
@@ -74,8 +76,10 @@ export async function getClientMetadata(key: string) {
     new QueryCommand({
       TableName: Resource.MyDynamoClientMetadataCache.name,
       KeyConditionExpression: 'clientId = :clientId',
+      FilterExpression: 'expiresAt > :now',
       ExpressionAttributeValues: {
         ':clientId': key,
+        ':now': Math.floor(new Date().getTime() / 1000),
       },
     })
   );

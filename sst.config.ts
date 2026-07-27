@@ -222,7 +222,7 @@ export default $config({
         runtime: 'nodejs22.x',
         install: packages,
       },
-      warm: isProductionStage ? 1 : 0,
+      // warm: isProductionStage ? 1 : 0,
       transform: {
         cdn(args) {
           args.defaultCacheBehavior = $resolve([args.defaultCacheBehavior]).apply(
@@ -255,86 +255,86 @@ export default $config({
     });
 
     // Create our VPC and add EC2 internet gateway
-    const vpc = new sst.aws.Vpc('MyVpc', { nat: 'ec2' });
-    const cluster = new sst.aws.Cluster('MyCluster', {
-      vpc,
-    });
+    // const vpc = new sst.aws.Vpc('MyVpc', { nat: 'ec2' });
+    // const cluster = new sst.aws.Cluster('MyCluster', {
+    //   vpc,
+    // });
 
-    const serviceMcp = new sst.aws.Service('MyMcpService', {
-      dev: {
-        command: 'npm run dev:mcp',
-      },
-      cluster,
-      image: {
-        dockerfile: './Dockerfile.mcp',
-        args: {
-          platform: 'linux/amd64',
-        },
-      },
-      loadBalancer: {
-        rules: [
-          process.env.CUSTOM_MCP_DOMAIN
-            ? { listen: '443/https', forward: '3333/http' }
-            : { listen: '80/http', forward: '3333/http' },
-        ],
-        domain: process.env.CUSTOM_MCP_DOMAIN
-          ? {
-              name: process.env.CUSTOM_MCP_DOMAIN,
-              dns: sst.aws.dns({
-                zone: process.env.AWS_HOSTED_ZONE_ID,
-              }),
-            }
-          : undefined,
-        health: {
-          '3333/http': {
-            path: '/health',
-            interval: '10 seconds',
-          },
-        },
-      },
-      cpu: '0.5 vCPU',
-      memory: '1 GB',
-      environment: environment,
-      link: [mailgunLinkable, dynamoMCPSessionCache].filter(Boolean),
-      transform: {
-        taskDefinition(args) {
-          args.containerDefinitions = $resolve([args.containerDefinitions]).apply(
-            ([containerDefinitions]) => {
-              const definitions = JSON.parse(containerDefinitions);
-              const healthCheck = {
-                command: [
-                  'CMD-SHELL',
-                  `node -e "require('http').get('http://localhost:3333/health', res => { process.exit(res.statusCode === 200 ? 0 : 1) });" || exit 1`,
-                ],
-                interval: 30,
-                timeout: 5,
-                retries: 2,
-                startPeriod: 120,
-              };
-              if (definitions[0]) {
-                definitions[0].healthCheck = healthCheck;
-              } else {
-                definitions.push({
-                  healthCheck: healthCheck,
-                });
-              }
-              return JSON.stringify(definitions);
-            }
-          );
-        },
-        target(args) {
-          args.healthCheck = $resolve([args.healthCheck]).apply(([healthCheck]) => {
-            if (healthCheck) {
-              healthCheck.path = '/health';
-              return healthCheck;
-            }
-            return {
-              path: '/health',
-            };
-          });
-        },
-      },
-    });
+    // const serviceMcp = new sst.aws.Service('MyMcpService', {
+    //   dev: {
+    //     command: 'npm run dev:mcp',
+    //   },
+    //   cluster,
+    //   image: {
+    //     dockerfile: './Dockerfile.mcp',
+    //     args: {
+    //       platform: 'linux/amd64',
+    //     },
+    //   },
+    //   loadBalancer: {
+    //     rules: [
+    //       process.env.CUSTOM_MCP_DOMAIN
+    //         ? { listen: '443/https', forward: '3333/http' }
+    //         : { listen: '80/http', forward: '3333/http' },
+    //     ],
+    //     domain: process.env.CUSTOM_MCP_DOMAIN
+    //       ? {
+    //           name: process.env.CUSTOM_MCP_DOMAIN,
+    //           dns: sst.aws.dns({
+    //             zone: process.env.AWS_HOSTED_ZONE_ID,
+    //           }),
+    //         }
+    //       : undefined,
+    //     health: {
+    //       '3333/http': {
+    //         path: '/health',
+    //         interval: '10 seconds',
+    //       },
+    //     },
+    //   },
+    //   cpu: '0.25 vCPU',
+    //   memory: '0.5 GB',
+    //   environment: environment,
+    //   link: [mailgunLinkable, dynamoMCPSessionCache].filter(Boolean),
+    //   transform: {
+    //     taskDefinition(args) {
+    //       args.containerDefinitions = $resolve([args.containerDefinitions]).apply(
+    //         ([containerDefinitions]) => {
+    //           const definitions = JSON.parse(containerDefinitions);
+    //           const healthCheck = {
+    //             command: [
+    //               'CMD-SHELL',
+    //               `node -e "require('http').get('http://localhost:3333/health', res => { process.exit(res.statusCode === 200 ? 0 : 1) });" || exit 1`,
+    //             ],
+    //             interval: 30,
+    //             timeout: 5,
+    //             retries: 2,
+    //             startPeriod: 120,
+    //           };
+    //           if (definitions[0]) {
+    //             definitions[0].healthCheck = healthCheck;
+    //           } else {
+    //             definitions.push({
+    //               healthCheck: healthCheck,
+    //             });
+    //           }
+    //           return JSON.stringify(definitions);
+    //         }
+    //       );
+    //     },
+    //     target(args) {
+    //       args.healthCheck = $resolve([args.healthCheck]).apply(([healthCheck]) => {
+    //         if (healthCheck) {
+    //           healthCheck.path = '/health';
+    //           return healthCheck;
+    //         }
+    //         return {
+    //           path: '/health',
+    //         };
+    //       });
+    //     },
+    //   },
+    // });
 
     // Watches and builds the shared lib in local deployment only
     if (!isCloudDeployment) {
@@ -350,7 +350,7 @@ export default $config({
       pool_id: pool.id,
       client_id: client.id,
       client_secret: client.secret,
-      service_mcp_url: serviceMcp.url,
+      // service_mcp_url: serviceMcp.url,
       mcp_session_cache_table_name: dynamoMCPSessionCache.name,
     };
   },
